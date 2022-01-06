@@ -30,6 +30,18 @@ class MockMovieRepository extends _i1.Mock implements _i2.MovieRepository {
       (super.noSuchMethod(Invocation.getter(#seriesPagination),
           returnValue: <List<_i2.Movie>>[]) as List<List<_i2.Movie>>);
   @override
+  List<List<_i2.Movie>> get searchPagination =>
+      (super.noSuchMethod(Invocation.getter(#searchPagination),
+          returnValue: <List<_i2.Movie>>[]) as List<List<_i2.Movie>>);
+  @override
+  String get searchInput =>
+      (super.noSuchMethod(Invocation.getter(#searchInput), returnValue: '')
+          as String);
+  @override
+  set searchInput(String? _searchInput) =>
+      super.noSuchMethod(Invocation.setter(#searchInput, _searchInput),
+          returnValueForMissingStub: null);
+  @override
   _i3.Future<List<_i2.Movie>> getSeries() =>
       (super.noSuchMethod(Invocation.method(#getSeries, []),
               returnValue: Future<List<_i2.Movie>>.value(<_i2.Movie>[]))
@@ -37,6 +49,16 @@ class MockMovieRepository extends _i1.Mock implements _i2.MovieRepository {
   @override
   _i3.Future<List<_i2.Movie>> getMoreSeries() =>
       (super.noSuchMethod(Invocation.method(#getMoreSeries, []),
+              returnValue: Future<List<_i2.Movie>>.value(<_i2.Movie>[]))
+          as _i3.Future<List<_i2.Movie>>);
+  @override
+  _i3.Future<List<_i2.Movie>> searchSeries(String? name) =>
+      (super.noSuchMethod(Invocation.method(#searchSeries, [name]),
+              returnValue: Future<List<_i2.Movie>>.value(<_i2.Movie>[]))
+          as _i3.Future<List<_i2.Movie>>);
+  @override
+  _i3.Future<List<_i2.Movie>> searchMoreSeries() =>
+      (super.noSuchMethod(Invocation.method(#searchMoreSeries, []),
               returnValue: Future<List<_i2.Movie>>.value(<_i2.Movie>[]))
           as _i3.Future<List<_i2.Movie>>);
 }
@@ -53,6 +75,12 @@ class MockMovieRemoteDataSource extends _i1.Mock
   @override
   _i3.Future<List<_i2.Movie>> getSeries([int? page = 0]) =>
       (super.noSuchMethod(Invocation.method(#getSeries, [page]),
+              returnValue: Future<List<_i2.Movie>>.value(<_i2.Movie>[]))
+          as _i3.Future<List<_i2.Movie>>);
+  @override
+  _i3.Future<List<_i2.Movie>> searchSeries({String? name, int? page = 0}) =>
+      (super.noSuchMethod(
+              Invocation.method(#searchSeries, [], {#name: name, #page: page}),
               returnValue: Future<List<_i2.Movie>>.value(<_i2.Movie>[]))
           as _i3.Future<List<_i2.Movie>>);
 }

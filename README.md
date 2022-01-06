@@ -13,4 +13,7 @@ Rafael Ferraz Jobsity interview challenge
 - Third:
   Sketch initial domain in order to accomplish first behavior, fetch series on start and test it.
   TDD & BDD
-  
+
+- Fourth:
+  Keep sketching domain in order to accomplish second behavior, search series.
+  TDD & BDD
