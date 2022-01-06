@@ -26,8 +26,33 @@ class MockMovieRepository extends _i1.Mock implements _i2.MovieRepository {
   }
 
   @override
+  List<List<_i2.Movie>> get seriesPagination =>
+      (super.noSuchMethod(Invocation.getter(#seriesPagination),
+          returnValue: <List<_i2.Movie>>[]) as List<List<_i2.Movie>>);
+  @override
   _i3.Future<List<_i2.Movie>> getSeries() =>
       (super.noSuchMethod(Invocation.method(#getSeries, []),
+              returnValue: Future<List<_i2.Movie>>.value(<_i2.Movie>[]))
+          as _i3.Future<List<_i2.Movie>>);
+  @override
+  _i3.Future<List<_i2.Movie>> getMoreSeries() =>
+      (super.noSuchMethod(Invocation.method(#getMoreSeries, []),
+              returnValue: Future<List<_i2.Movie>>.value(<_i2.Movie>[]))
+          as _i3.Future<List<_i2.Movie>>);
+}
+
+/// A class which mocks [MovieRemoteDataSource].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockMovieRemoteDataSource extends _i1.Mock
+    implements _i2.MovieRemoteDataSource {
+  MockMovieRemoteDataSource() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i3.Future<List<_i2.Movie>> getSeries([int? page = 0]) =>
+      (super.noSuchMethod(Invocation.method(#getSeries, [page]),
               returnValue: Future<List<_i2.Movie>>.value(<_i2.Movie>[]))
           as _i3.Future<List<_i2.Movie>>);
 }
