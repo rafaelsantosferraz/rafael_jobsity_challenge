@@ -10,14 +10,26 @@ import 'widget_test.mocks.dart';
 class Episode {
 
   final String name;
+  final int number;
+  final int season;
+  final String summary;
+  final String? imageUrl;
 
   Episode({
-    required this.name
+    required this.name,
+    required this.number,
+    required this.season,
+    required this.summary,
+    this.imageUrl,
   });
 
   factory Episode.fromJson(Map<String, dynamic> json){
     return Episode(
-        name: json['name']
+        name: json['name'],
+        number: json['number'],
+        season: json['season'],
+        summary: json['summary'],
+        imageUrl: json['imageUrl']
     );
   }
 }
@@ -440,37 +452,81 @@ void main() {
         ])
       ]));
     });
+  });
 
-    group('After clicking on a series, the application should show the details of the series', (){
+  group('After clicking on a series, the application should show the details of the series', (){
 
-      test('When parse from json, series SHOULD have Name, Poster, Days and time during which the series airs, Genres, Summary, List of episodes separated by season', (){
-        //Given/Arrange
-        var json = {
-          'name': 'name',
-          'posterUrl': 'posterUrl',
-          'airs': DateTime.now().millisecondsSinceEpoch,
-          'genres': ['love, horror'],
-          'summary': 'summary',
-          'episodes': [
-            {'name': 'name'},
-            {'name': 'name'},
-            {'name': 'name'}
-          ],
-        };
-        late ASeries aSeries;
+    test('When parse from json, series SHOULD have Name, Poster, Days and time during which the series airs, Genres, Summary, List of episodes separated by season', (){
+      //Given/Arrange
+      var json = {
+        'name': 'name',
+        'posterUrl': 'posterUrl',
+        'airs': DateTime.now().millisecondsSinceEpoch,
+        'genres': ['love, horror'],
+        'summary': 'summary',
+        'episodes': [
+          {
+            'name': 'name',
+            'number': 1,
+            'season': 1,
+            'summary': 'summary',
+            'imageUrl': 'imageUrl'
+          },
+          {
+            'name': 'name',
+            'number': 1,
+            'season': 1,
+            'summary': 'summary',
+            'imageUrl': 'imageUrl'
+          },
+          {
+            'name': 'name',
+            'number': 1,
+            'season': 1,
+            'summary': 'summary',
+            'imageUrl': 'imageUrl'
+          }
+        ],
+      };
+      late ASeries aSeries;
 
-        //When/Act
-        aSeries = ASeries.fromJson(json);
+      //When/Act
+      aSeries = ASeries.fromJson(json);
 
-        //Then/Assert
-        expect(aSeries, isNot(equals(null)));
-        expect(aSeries.name, isNot(equals(null)));
-        expect(aSeries.posterUrl, isNot(equals(null)));
-        expect(aSeries.airs, isNot(equals(null)));
-        expect(aSeries.genres, isNot(equals(null)));
-        expect(aSeries.summary, isNot(equals(null)));
-        expect(aSeries.episodes, isNot(equals(null)));
-      });
+      //Then/Assert
+      expect(aSeries, isNot(equals(null)));
+      expect(aSeries.name, isNot(equals(null)));
+      expect(aSeries.posterUrl, isNot(equals(null)));
+      expect(aSeries.airs, isNot(equals(null)));
+      expect(aSeries.genres, isNot(equals(null)));
+      expect(aSeries.summary, isNot(equals(null)));
+      expect(aSeries.episodes, isNot(equals(null)));
+    });
+  });
+
+  group('After clicking on an episode, the application should show the episode’s information', (){
+
+    test('When parse from json, episode SHOULD have Name, Number, Season, Image if there is one', (){
+      //Given/Arrange
+      var json = {
+        'name': 'name',
+        'number': 1,
+        'season': 1,
+        'summary': 'summary',
+        'imageUrl': 'imageUrl'
+      };
+      late Episode episode;
+
+      //When/Act
+      episode = Episode.fromJson(json);
+
+      //Then/Assert
+      expect(episode, isNot(equals(null)));
+      expect(episode.name, isNot(equals(null)));
+      expect(episode.number, isNot(equals(null)));
+      expect(episode.season, isNot(equals(null)));
+      expect(episode.summary, isNot(equals(null)));
+      expect(episode.imageUrl, isNot(equals(null)));
     });
   });
 }
