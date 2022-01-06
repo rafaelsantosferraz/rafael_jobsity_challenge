@@ -17,3 +17,7 @@ Rafael Ferraz Jobsity interview challenge
 - Fourth:
   Keep sketching domain in order to accomplish second behavior, search series.
   TDD & BDD
+
+- Fifth:
+  Keep sketching domain in order to accomplish third behavior, series fields.
+  TDD & BDD

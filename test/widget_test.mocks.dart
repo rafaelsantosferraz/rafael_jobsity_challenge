@@ -17,22 +17,22 @@ import 'widget_test.dart' as _i2;
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 
-/// A class which mocks [MovieRepository].
+/// A class which mocks [SeriesRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockMovieRepository extends _i1.Mock implements _i2.MovieRepository {
-  MockMovieRepository() {
+class MockSeriesRepository extends _i1.Mock implements _i2.SeriesRepository {
+  MockSeriesRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  List<List<_i2.Movie>> get seriesPagination =>
-      (super.noSuchMethod(Invocation.getter(#seriesPagination),
-          returnValue: <List<_i2.Movie>>[]) as List<List<_i2.Movie>>);
+  List<List<_i2.ASeries>> get seriesPagination => (super.noSuchMethod(
+      Invocation.getter(#seriesPagination),
+      returnValue: <List<_i2.ASeries>>[]) as List<List<_i2.ASeries>>);
   @override
-  List<List<_i2.Movie>> get searchPagination =>
-      (super.noSuchMethod(Invocation.getter(#searchPagination),
-          returnValue: <List<_i2.Movie>>[]) as List<List<_i2.Movie>>);
+  List<List<_i2.ASeries>> get searchPagination => (super.noSuchMethod(
+      Invocation.getter(#searchPagination),
+      returnValue: <List<_i2.ASeries>>[]) as List<List<_i2.ASeries>>);
   @override
   String get searchInput =>
       (super.noSuchMethod(Invocation.getter(#searchInput), returnValue: '')
@@ -42,45 +42,49 @@ class MockMovieRepository extends _i1.Mock implements _i2.MovieRepository {
       super.noSuchMethod(Invocation.setter(#searchInput, _searchInput),
           returnValueForMissingStub: null);
   @override
-  _i3.Future<List<_i2.Movie>> getSeries() =>
-      (super.noSuchMethod(Invocation.method(#getSeries, []),
-              returnValue: Future<List<_i2.Movie>>.value(<_i2.Movie>[]))
-          as _i3.Future<List<_i2.Movie>>);
+  _i3.Future<List<_i2.ASeries>> getSeries() => (super.noSuchMethod(
+          Invocation.method(#getSeries, []),
+          returnValue: Future<List<_i2.ASeries>>.value(<_i2.ASeries>[]))
+      as _i3.Future<List<_i2.ASeries>>);
   @override
-  _i3.Future<List<_i2.Movie>> getMoreSeries() =>
-      (super.noSuchMethod(Invocation.method(#getMoreSeries, []),
-              returnValue: Future<List<_i2.Movie>>.value(<_i2.Movie>[]))
-          as _i3.Future<List<_i2.Movie>>);
+  _i3.Future<List<_i2.ASeries>> getMoreSeries() => (super.noSuchMethod(
+          Invocation.method(#getMoreSeries, []),
+          returnValue: Future<List<_i2.ASeries>>.value(<_i2.ASeries>[]))
+      as _i3.Future<List<_i2.ASeries>>);
   @override
-  _i3.Future<List<_i2.Movie>> searchSeries(String? name) =>
+  _i3.Future<List<_i2.ASeries>> searchSeries(String? name) =>
       (super.noSuchMethod(Invocation.method(#searchSeries, [name]),
-              returnValue: Future<List<_i2.Movie>>.value(<_i2.Movie>[]))
-          as _i3.Future<List<_i2.Movie>>);
+              returnValue:
+                  Future<List<_i2.ASeries>>.value(<_i2.ASeries>[]))
+          as _i3.Future<List<_i2.ASeries>>);
   @override
-  _i3.Future<List<_i2.Movie>> searchMoreSeries() =>
-      (super.noSuchMethod(Invocation.method(#searchMoreSeries, []),
-              returnValue: Future<List<_i2.Movie>>.value(<_i2.Movie>[]))
-          as _i3.Future<List<_i2.Movie>>);
+  _i3.Future<List<_i2.ASeries>> searchMoreSeries() => (super.noSuchMethod(
+          Invocation.method(#searchMoreSeries, []),
+          returnValue: Future<List<_i2.ASeries>>.value(<_i2.ASeries>[]))
+      as _i3.Future<List<_i2.ASeries>>);
 }
 
-/// A class which mocks [MovieRemoteDataSource].
+/// A class which mocks [SeriesRemoteDataSource].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockMovieRemoteDataSource extends _i1.Mock
-    implements _i2.MovieRemoteDataSource {
-  MockMovieRemoteDataSource() {
+class MockSeriesRemoteDataSource extends _i1.Mock
+    implements _i2.SeriesRemoteDataSource {
+  MockSeriesRemoteDataSource() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<List<_i2.Movie>> getSeries([int? page = 0]) =>
+  _i3.Future<List<_i2.ASeries>> getSeries([int? page = 0]) =>
       (super.noSuchMethod(Invocation.method(#getSeries, [page]),
-              returnValue: Future<List<_i2.Movie>>.value(<_i2.Movie>[]))
-          as _i3.Future<List<_i2.Movie>>);
+              returnValue:
+                  Future<List<_i2.ASeries>>.value(<_i2.ASeries>[]))
+          as _i3.Future<List<_i2.ASeries>>);
   @override
-  _i3.Future<List<_i2.Movie>> searchSeries({String? name, int? page = 0}) =>
+  _i3.Future<List<_i2.ASeries>> searchSeries(
+          {String? name, int? page = 0}) =>
       (super.noSuchMethod(
               Invocation.method(#searchSeries, [], {#name: name, #page: page}),
-              returnValue: Future<List<_i2.Movie>>.value(<_i2.Movie>[]))
-          as _i3.Future<List<_i2.Movie>>);
+              returnValue:
+                  Future<List<_i2.ASeries>>.value(<_i2.ASeries>[]))
+          as _i3.Future<List<_i2.ASeries>>);
 }
