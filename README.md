@@ -40,3 +40,6 @@ Rafael Ferraz Jobsity interview challenge
 
 - 7th:
   Enough sketching, now will start structure directories with clean arch
+  
+- 8th:
+  Start basic home Ui

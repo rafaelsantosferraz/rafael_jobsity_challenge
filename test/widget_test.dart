@@ -27,10 +27,10 @@ void main() {
     final mockTvShowsRepository = MockTvShowsRepository();
     final mockTvShowsRemoteDataSource = MockTvShowsRemoteDataSource();
 
-    test('WHEN movie library start, movie library SHOULD fetch from movie repository and stream result ', () async {
+    test('WHEN tvShows library start, tvShows library SHOULD fetch from tvShows repository and stream result ', () async {
       // Given/Arrange
 
-      final movieLibrary = TvShowsLibrary(mockTvShowsRepository);
+      final tvShowsLibrary = TvShowsLibrary(mockTvShowsRepository);
       final mockDbTvShows = [
         FakeEmptyTvShow('1'),
         FakeEmptyTvShow('2'),
@@ -41,16 +41,16 @@ void main() {
       when(mockTvShowsRepository.getTvShows()).thenAnswer((_) async => mockDbTvShows);
 
       // When/Act
-      movieLibrary.addEvent(TvShowsLibraryEvent.start());
+      tvShowsLibrary.addEvent(TvShowsLibraryEvent.start());
 
       // Then/Assert
-      expectLater(movieLibrary.tvShows, emits(mockDbTvShows));
+      expectLater(tvShowsLibrary.tvShows, emits(mockDbTvShows));
     });
 
-    test('WHEN get more series, movie library SHOULD fetch from movie repository next page until no more series and stream result', () async {
+    test('WHEN get more series, tvShows library SHOULD fetch from tvShows repository next page until no more series and stream result', () async {
       // Given/Arrange
-      final movieRepository = TvShowsRepository(mockTvShowsRemoteDataSource);
-      var movieLibrary = TvShowsLibrary(movieRepository);
+      final tvShowsRepository = TvShowsRepository(mockTvShowsRemoteDataSource);
+      var tvShowsLibrary = TvShowsLibrary(tvShowsRepository);
       final seriesByPage = <int, List<TvShow>>{
         0:[
           FakeEmptyTvShow('01'),
@@ -74,13 +74,13 @@ void main() {
       when(mockTvShowsRemoteDataSource.getTvShows(3)).thenAnswer((_) async => []);
 
       // When/Act
-      movieLibrary.addEvent(TvShowsLibraryEvent.start());
-      movieLibrary.addEvent(TvShowsLibraryEvent.getMoreTvShows());
-      movieLibrary.addEvent(TvShowsLibraryEvent.getMoreTvShows());
-      movieLibrary.addEvent(TvShowsLibraryEvent.getMoreTvShows());
+      tvShowsLibrary.addEvent(TvShowsLibraryEvent.start());
+      tvShowsLibrary.addEvent(TvShowsLibraryEvent.getMoreTvShows());
+      tvShowsLibrary.addEvent(TvShowsLibraryEvent.getMoreTvShows());
+      tvShowsLibrary.addEvent(TvShowsLibraryEvent.getMoreTvShows());
 
       // Then/Assert
-      expectLater(movieLibrary.tvShows, emitsInOrder([
+      expectLater(tvShowsLibrary.tvShows, emitsInOrder([
         seriesByPage[0],
         List.of([
           ...seriesByPage[0]!,
@@ -103,10 +103,10 @@ void main() {
   group('Allow users to search series by name.',(){
     final mockTvShowsRemoteDataSource = MockTvShowsRemoteDataSource();
 
-    test('WHEN user input search parameter, SHOULD fetch from movie repository series with that input parameter and stream result ', () async {
+    test('WHEN user input search parameter, SHOULD fetch from tvShows repository series with that input parameter and stream result ', () async {
       // Given/Arrange
-      final movieRepository = TvShowsRepository(mockTvShowsRemoteDataSource);
-      final movieLibrary = TvShowsLibrary(movieRepository);
+      final tvShowsRepository = TvShowsRepository(mockTvShowsRemoteDataSource);
+      final tvShowsLibrary = TvShowsLibrary(tvShowsRepository);
       const searchInput = 'love';
       final mockDbTvShowsSearchResult = [
         FakeEmptyTvShow('in love'),
@@ -118,16 +118,16 @@ void main() {
       when(mockTvShowsRemoteDataSource.searchTvShows(name: searchInput)).thenAnswer((_) async => mockDbTvShowsSearchResult);
 
       // When/Act
-      movieLibrary.addEvent(TvShowsLibraryEvent.searchTvShows(searchInput));
+      tvShowsLibrary.addEvent(TvShowsLibraryEvent.searchTvShows(searchInput));
 
       // Then/Assert
-      expectLater(movieLibrary.search, emits(mockDbTvShowsSearchResult));
+      expectLater(tvShowsLibrary.search, emits(mockDbTvShowsSearchResult));
     });
 
-    test('WHEN user input search parameter, SHOULD search from movie repository series with that input parameter and stream result ', () async {
+    test('WHEN user input search parameter, SHOULD search from tvShows repository series with that input parameter and stream result ', () async {
       // Given/Arrange
-      final movieRepository = TvShowsRepository(mockTvShowsRemoteDataSource);
-      final movieLibrary = TvShowsLibrary(movieRepository);
+      final tvShowsRepository = TvShowsRepository(mockTvShowsRemoteDataSource);
+      final tvShowsLibrary = TvShowsLibrary(tvShowsRepository);
       const searchInput = 'love';
       final mockDbTvShowsSearchResult = [
         FakeEmptyTvShow('in love'),
@@ -139,16 +139,16 @@ void main() {
       when(mockTvShowsRemoteDataSource.searchTvShows(name: searchInput)).thenAnswer((_) async => mockDbTvShowsSearchResult);
 
       // When/Act
-      movieLibrary.addEvent(TvShowsLibraryEvent.searchTvShows(searchInput));
+      tvShowsLibrary.addEvent(TvShowsLibraryEvent.searchTvShows(searchInput));
 
       // Then/Assert
-      expectLater(movieLibrary.search, emits(mockDbTvShowsSearchResult));
+      expectLater(tvShowsLibrary.search, emits(mockDbTvShowsSearchResult));
     });
 
-    test('WHEN search more, movie library SHOULD search from movie repository next page until no more series and stream result', () async {
+    test('WHEN search more, tvShows library SHOULD search from tvShows repository next page until no more series and stream result', () async {
       // Given/Arrange
-      final movieRepository = TvShowsRepository(mockTvShowsRemoteDataSource);
-      final movieLibrary = TvShowsLibrary(movieRepository);
+      final tvShowsRepository = TvShowsRepository(mockTvShowsRemoteDataSource);
+      final tvShowsLibrary = TvShowsLibrary(tvShowsRepository);
       const searchInput = 'love';
       final searchResultPages = <int, List<TvShow>>{
         0:[
@@ -173,13 +173,13 @@ void main() {
       when(mockTvShowsRemoteDataSource.searchTvShows(name: searchInput, page: 3)).thenAnswer((_) async => []);
 
       // When/Act
-      movieLibrary.addEvent(TvShowsLibraryEvent.searchTvShows(searchInput));
-      movieLibrary.addEvent(TvShowsLibraryEvent.searchMoreTvShows());
-      movieLibrary.addEvent(TvShowsLibraryEvent.searchMoreTvShows());
-      movieLibrary.addEvent(TvShowsLibraryEvent.searchMoreTvShows());
+      tvShowsLibrary.addEvent(TvShowsLibraryEvent.searchTvShows(searchInput));
+      tvShowsLibrary.addEvent(TvShowsLibraryEvent.searchMoreTvShows());
+      tvShowsLibrary.addEvent(TvShowsLibraryEvent.searchMoreTvShows());
+      tvShowsLibrary.addEvent(TvShowsLibraryEvent.searchMoreTvShows());
 
       // Then/Assert
-      expectLater(movieLibrary.search, emitsInOrder([
+      expectLater(tvShowsLibrary.search, emitsInOrder([
         searchResultPages[0],
         List.of([
           ...searchResultPages[0]!,
