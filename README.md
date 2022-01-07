@@ -4,36 +4,39 @@ Rafael Ferraz Jobsity interview challenge
 
 ## Working process notes
   
-  The main focus is on test driven development, using behavior (BDD) along the document with
-  requirements.
+  The main focus is on test driven development, which is design using behavior (BDD) to fit the 
+  application requirements.
   TDD process lets you focus on domain (DDD), resulting in a better design, all together with test 
-  quality insurance. 
+  quality assurance. 
   Event driven development fits perfectly with BDD language, making it easy to link code behavior 
-  with document specify behavior. Example: 
+  with document specified behaviors. Example: 
       - document says: 'When user taps...' 
       - code run: TapEvent trigger; 
 
 
 ## Working process steps
 
-- First: 
+- 1th: 
   git init & first commit
   
-- Second: 
+- 2th: 
   Started this documentation 
   
-- Third:
+- 3th:
   Sketch initial domain in order to accomplish first behavior, fetch series on start and test it.
   TDD & BDD
 
-- Fourth:
+- 4th:
   Keep sketching domain in order to accomplish second behavior, search series.
   TDD & BDD
 
-- Fifth:
+- 5th:
   Keep sketching domain in order to accomplish third behavior, series fields.
   TDD & BDD
 
-- Sixth:
+- 6th:
   Keep sketching domain in order to accomplish fourth behavior, episode fields.
   TDD & BDD
+
+- 7th:
+  Enough sketching, now will start structure directories with clean arch

@@ -1,275 +1,20 @@
-
-import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:rafael_jobsity_challenge/data/datasources/remote/tv_shows_remote_datasource.dart';
+import 'package:rafael_jobsity_challenge/data/repositories/tv_shows_repository.dart';
+import 'package:rafael_jobsity_challenge/domain/entities/episode.dart';
+import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
+import 'package:rafael_jobsity_challenge/domain/entities/tv_shows_library.dart';
 
 import 'widget_test.mocks.dart';
 
-class Episode {
 
-  final String name;
-  final int number;
-  final int season;
-  final String summary;
-  final String? imageUrl;
-
-  Episode({
-    required this.name,
-    required this.number,
-    required this.season,
-    required this.summary,
-    this.imageUrl,
-  });
-
-  factory Episode.fromJson(Map<String, dynamic> json){
-    return Episode(
-        name: json['name'],
-        number: json['number'],
-        season: json['season'],
-        summary: json['summary'],
-        imageUrl: json['imageUrl']
-    );
-  }
-}
-
-
-class ASeries{
-  final String name;
-  final String posterUrl;
-  final DateTime airs;
-  final List<String> genres;
-  final String summary;
-  final List<Episode> episodes;
-
-  ASeries({
-    required this.name,
-    required this.posterUrl,
-    required this.airs,
-    required this.genres,
-    required this.summary,
-    required this.episodes
-  });
-
-  factory ASeries.fromJson(Map<String, dynamic> json){
-    return ASeries(
-        name: json['name'],
-        posterUrl: json['posterUrl'],
-        airs: DateTime.fromMillisecondsSinceEpoch(json['airs']),
-        genres: json['genres'],
-        summary: json['summary'],
-        episodes: (json['episodes'] as List<Map<String, dynamic>>)
-            .map<Episode>((episodeJson) => Episode.fromJson(episodeJson))
-            .toList()
-    );
-  }
-
-  @override
-  String toString() {
-    return "Series: $name";
-  }
-
-  @override
-  bool operator ==(Object other) {
-    other as ASeries;
-    return other.name == name;
-  }
-
-  @override
-  int get hashCode => name.hashCode;
-}
-
-typedef Series = Stream<List<ASeries>>;
-class SeriesLibrary{
-
-  final SeriesRepository _movieRepository;
-  SeriesLibrary(this._movieRepository);
-
-  final StreamController<List<ASeries>> _seriesStream = StreamController();
-  final StreamController<List<ASeries>> _searchStream = StreamController();
-
-
-  Series get series => _seriesStream.stream;
-  Series get search => _searchStream.stream;
-
-  final _eventsQueue = <SeriesLibraryEvent>[];
-  final _eventsHistory = <SeriesLibraryEvent>[];
-
-
-
-
-  //region Public --------------------------------------------------------------
-  addEvent(SeriesLibraryEvent event) async {
-    _eventsQueue.add(event);
-    if(_eventsQueue.length == 1){
-      _processNextEvent();
-    }
-  }
-
-  printEventHistory(){
-    for(var event in _eventsHistory){
-      print(event);
-    }
-  }
-
-  close(){
-    _seriesStream.close();
-  }
-  //endregion
-
-
-  //region Private -------------------------------------------------------------
-  ///Controls that every event get process in order of arrival to avoid any race
-  ///conditions
-  Future _processNextEvent() async {
-    if(_eventsQueue.isNotEmpty){
-      await _onEvent(_eventsQueue.first);
-      _eventsHistory.add(_eventsQueue.first);
-      _eventsQueue.removeAt(0);
-      _processNextEvent();
-    }
-  }
-
-  Future _onEvent(SeriesLibraryEvent event) async {
-    switch(event.runtimeType){
-      case SeriesLibraryStartEvent: await _onStart(event as SeriesLibraryStartEvent);
-      break;
-      case SeriesLibraryGetMoreSeriesEvent: await _onGetMoreSeries(event as SeriesLibraryGetMoreSeriesEvent);
-      break;
-      case SeriesLibrarySearchSeriesEvent: await _onSearchSeries(event as SeriesLibrarySearchSeriesEvent);
-      break;
-      case SeriesLibrarySearchMoreSeriesEvent: await _onSearchMoreSeries(event as SeriesLibrarySearchMoreSeriesEvent);
-      break;
-      default: throw Exception('Event ${event.runtimeType} not process');
-    }
-  }
-
-  Future _onStart(SeriesLibraryStartEvent event) async {
-    var series = await _movieRepository.getSeries();
-    _seriesStream.sink.add(series);
-  }
-
-  Future _onGetMoreSeries(SeriesLibraryGetMoreSeriesEvent event) async {
-    var series = await _movieRepository.getMoreSeries();
-    _seriesStream.sink.add(series);
-  }
-
-  Future _onSearchSeries(SeriesLibrarySearchSeriesEvent event) async {
-    var series = await _movieRepository.searchSeries(event.name);
-    _searchStream.sink.add(series);
-  }
-
-  Future _onSearchMoreSeries(SeriesLibrarySearchMoreSeriesEvent event) async {
-    var series = await _movieRepository.searchMoreSeries();
-    _searchStream.sink.add(series);
-  }
-  //endRegion
-}
-
-
-
-class SeriesLibraryEvent{
-
-  const SeriesLibraryEvent._();
-
-  factory SeriesLibraryEvent.start() = SeriesLibraryStartEvent;
-  factory SeriesLibraryEvent.getMoreSeries() = SeriesLibraryGetMoreSeriesEvent;
-  factory SeriesLibraryEvent.searchSeries(String name) = SeriesLibrarySearchSeriesEvent;
-  factory SeriesLibraryEvent.searchMoreSeries() = SeriesLibrarySearchMoreSeriesEvent;
-}
-
-class SeriesLibraryStartEvent extends SeriesLibraryEvent {
-  const SeriesLibraryStartEvent() : super._();
-
-  @override
-  String toString() => 'SeriesLibraryEvent: start';
-}
-
-class SeriesLibraryGetMoreSeriesEvent extends SeriesLibraryEvent {
-  const SeriesLibraryGetMoreSeriesEvent() : super._();
-
-  @override
-  String toString() => 'SeriesLibraryEvent: get more series';
-}
-
-class SeriesLibrarySearchSeriesEvent extends SeriesLibraryEvent {
-  final String name;
-  const SeriesLibrarySearchSeriesEvent(this.name) : super._();
-
-  @override
-  String toString() => 'SeriesLibraryEvent: search series named $name';
-}
-
-class SeriesLibrarySearchMoreSeriesEvent extends SeriesLibraryEvent {
-  const SeriesLibrarySearchMoreSeriesEvent() : super._();
-
-  @override
-  String toString() => 'SeriesLibraryEvent: search more series with same name';
-}
-
-
-
-class SeriesRepository {
-
-  final SeriesRemoteDataSource _movieRemoteDataSource;
-
-  SeriesRepository(this._movieRemoteDataSource);
-
-  final seriesPagination = <List<ASeries>>[];
-  final searchPagination = <List<ASeries>>[];
-  String searchInput = '';
-
-  ///Get first page of series
-  Future<List<ASeries>> getSeries() async{
-    var series = await _movieRemoteDataSource.getSeries();
-    seriesPagination.clear();
-    seriesPagination.add(series);
-    return seriesPagination.expand<ASeries>((pageSeries) => pageSeries).toList();
-  }
-
-  ///Get next page series. If there's no more pages, it return list without
-  ///changes
-  Future<List<ASeries>> getMoreSeries() async{
-    assert(seriesPagination.isNotEmpty);
-    var series = await _movieRemoteDataSource.getSeries(seriesPagination.length);
-    seriesPagination.add(series);
-    return seriesPagination.expand<ASeries>((pageSeries) => pageSeries).toList();
-  }
-
-  Future<List<ASeries>> searchSeries(String name) async{
-    searchInput = name;
-    var series = await _movieRemoteDataSource.searchSeries(name: name);
-    searchPagination.clear();
-    searchPagination.add(series);
-    return searchPagination.expand<ASeries>((pageSeries) => pageSeries).toList();
-  }
-
-  Future<List<ASeries>> searchMoreSeries() async{
-    assert(searchPagination.isNotEmpty);
-    var series = await _movieRemoteDataSource.searchSeries(name: searchInput, page: searchPagination.length);
-    searchPagination.add(series);
-    return searchPagination.expand<ASeries>((pageSeries) => pageSeries).toList();
-  }
-}
-
-class SeriesRemoteDataSource{
-
-  Future<List<ASeries>> getSeries([int page = 0]) async{
-    return []; //todo: API call
-  }
-
-  Future<List<ASeries>> searchSeries({required String name, int? page = 0}) async{
-    return []; //todo: API call
-  }
-}
-
-
-@GenerateMocks([SeriesRepository, SeriesRemoteDataSource])
+@GenerateMocks([TvShowsRepository, TvShowsRemoteDataSource])
 void main() {
 
-  ASeries FakeEmptySingleSerie(String name){
-    return ASeries(
+  TvShow FakeEmptyTvShow(String name){
+    return TvShow(
         name: name,
         posterUrl: "",
         airs: DateTime.now(),
@@ -279,63 +24,63 @@ void main() {
   }
   group('List all of the series contained in the API used by the paging scheme provided by the API.', (){
 
-    final mockSeriesRepository = MockSeriesRepository();
-    final mockSeriesRemoteDataSource = MockSeriesRemoteDataSource();
+    final mockTvShowsRepository = MockTvShowsRepository();
+    final mockTvShowsRemoteDataSource = MockTvShowsRemoteDataSource();
 
     test('WHEN movie library start, movie library SHOULD fetch from movie repository and stream result ', () async {
       // Given/Arrange
 
-      final movieLibrary = SeriesLibrary(mockSeriesRepository);
-      final mockDbSeries = [
-        FakeEmptySingleSerie('1'),
-        FakeEmptySingleSerie('2'),
-        FakeEmptySingleSerie('3'),
-        FakeEmptySingleSerie('4'),
-        FakeEmptySingleSerie('5'),
+      final movieLibrary = TvShowsLibrary(mockTvShowsRepository);
+      final mockDbTvShows = [
+        FakeEmptyTvShow('1'),
+        FakeEmptyTvShow('2'),
+        FakeEmptyTvShow('3'),
+        FakeEmptyTvShow('4'),
+        FakeEmptyTvShow('5'),
       ];
-      when(mockSeriesRepository.getSeries()).thenAnswer((_) async => mockDbSeries);
+      when(mockTvShowsRepository.getTvShows()).thenAnswer((_) async => mockDbTvShows);
 
       // When/Act
-      movieLibrary.addEvent(SeriesLibraryEvent.start());
+      movieLibrary.addEvent(TvShowsLibraryEvent.start());
 
       // Then/Assert
-      expectLater(movieLibrary.series, emits(mockDbSeries));
+      expectLater(movieLibrary.tvShows, emits(mockDbTvShows));
     });
 
     test('WHEN get more series, movie library SHOULD fetch from movie repository next page until no more series and stream result', () async {
       // Given/Arrange
-      final movieRepository = SeriesRepository(mockSeriesRemoteDataSource);
-      var movieLibrary = SeriesLibrary(movieRepository);
-      final seriesByPage = <int, List<ASeries>>{
+      final movieRepository = TvShowsRepository(mockTvShowsRemoteDataSource);
+      var movieLibrary = TvShowsLibrary(movieRepository);
+      final seriesByPage = <int, List<TvShow>>{
         0:[
-          FakeEmptySingleSerie('01'),
-          FakeEmptySingleSerie('02'),
-          FakeEmptySingleSerie('03'),
+          FakeEmptyTvShow('01'),
+          FakeEmptyTvShow('02'),
+          FakeEmptyTvShow('03'),
         ],
         1:[
-          FakeEmptySingleSerie('11'),
-          FakeEmptySingleSerie('12'),
-          FakeEmptySingleSerie('13'),
+          FakeEmptyTvShow('11'),
+          FakeEmptyTvShow('12'),
+          FakeEmptyTvShow('13'),
         ],
         2:[
-          FakeEmptySingleSerie('21'),
-          FakeEmptySingleSerie('22'),
-          FakeEmptySingleSerie('23'),
+          FakeEmptyTvShow('21'),
+          FakeEmptyTvShow('22'),
+          FakeEmptyTvShow('23'),
         ]
       };
-      when(mockSeriesRemoteDataSource.getSeries(0)).thenAnswer((_) async => seriesByPage[0]!);
-      when(mockSeriesRemoteDataSource.getSeries(1)).thenAnswer((_) async => seriesByPage[1]!);
-      when(mockSeriesRemoteDataSource.getSeries(2)).thenAnswer((_) async => seriesByPage[2]!);
-      when(mockSeriesRemoteDataSource.getSeries(3)).thenAnswer((_) async => []);
+      when(mockTvShowsRemoteDataSource.getTvShows(0)).thenAnswer((_) async => seriesByPage[0]!);
+      when(mockTvShowsRemoteDataSource.getTvShows(1)).thenAnswer((_) async => seriesByPage[1]!);
+      when(mockTvShowsRemoteDataSource.getTvShows(2)).thenAnswer((_) async => seriesByPage[2]!);
+      when(mockTvShowsRemoteDataSource.getTvShows(3)).thenAnswer((_) async => []);
 
       // When/Act
-      movieLibrary.addEvent(SeriesLibraryEvent.start());
-      movieLibrary.addEvent(SeriesLibraryEvent.getMoreSeries());
-      movieLibrary.addEvent(SeriesLibraryEvent.getMoreSeries());
-      movieLibrary.addEvent(SeriesLibraryEvent.getMoreSeries());
+      movieLibrary.addEvent(TvShowsLibraryEvent.start());
+      movieLibrary.addEvent(TvShowsLibraryEvent.getMoreTvShows());
+      movieLibrary.addEvent(TvShowsLibraryEvent.getMoreTvShows());
+      movieLibrary.addEvent(TvShowsLibraryEvent.getMoreTvShows());
 
       // Then/Assert
-      expectLater(movieLibrary.series, emitsInOrder([
+      expectLater(movieLibrary.tvShows, emitsInOrder([
         seriesByPage[0],
         List.of([
           ...seriesByPage[0]!,
@@ -356,82 +101,82 @@ void main() {
   });
 
   group('Allow users to search series by name.',(){
-    final mockSeriesRemoteDataSource = MockSeriesRemoteDataSource();
+    final mockTvShowsRemoteDataSource = MockTvShowsRemoteDataSource();
 
     test('WHEN user input search parameter, SHOULD fetch from movie repository series with that input parameter and stream result ', () async {
       // Given/Arrange
-      final movieRepository = SeriesRepository(mockSeriesRemoteDataSource);
-      final movieLibrary = SeriesLibrary(movieRepository);
+      final movieRepository = TvShowsRepository(mockTvShowsRemoteDataSource);
+      final movieLibrary = TvShowsLibrary(movieRepository);
       const searchInput = 'love';
-      final mockDbSeriesSearchResult = [
-        FakeEmptySingleSerie('in love'),
-        FakeEmptySingleSerie('only love'),
-        FakeEmptySingleSerie('always love'),
-        FakeEmptySingleSerie('never love'),
-        FakeEmptySingleSerie('even more love'),
+      final mockDbTvShowsSearchResult = [
+        FakeEmptyTvShow('in love'),
+        FakeEmptyTvShow('only love'),
+        FakeEmptyTvShow('always love'),
+        FakeEmptyTvShow('never love'),
+        FakeEmptyTvShow('even more love'),
       ];
-      when(mockSeriesRemoteDataSource.searchSeries(name: searchInput)).thenAnswer((_) async => mockDbSeriesSearchResult);
+      when(mockTvShowsRemoteDataSource.searchTvShows(name: searchInput)).thenAnswer((_) async => mockDbTvShowsSearchResult);
 
       // When/Act
-      movieLibrary.addEvent(SeriesLibraryEvent.searchSeries(searchInput));
+      movieLibrary.addEvent(TvShowsLibraryEvent.searchTvShows(searchInput));
 
       // Then/Assert
-      expectLater(movieLibrary.search, emits(mockDbSeriesSearchResult));
+      expectLater(movieLibrary.search, emits(mockDbTvShowsSearchResult));
     });
 
     test('WHEN user input search parameter, SHOULD search from movie repository series with that input parameter and stream result ', () async {
       // Given/Arrange
-      final movieRepository = SeriesRepository(mockSeriesRemoteDataSource);
-      final movieLibrary = SeriesLibrary(movieRepository);
+      final movieRepository = TvShowsRepository(mockTvShowsRemoteDataSource);
+      final movieLibrary = TvShowsLibrary(movieRepository);
       const searchInput = 'love';
-      final mockDbSeriesSearchResult = [
-        FakeEmptySingleSerie('in love'),
-        FakeEmptySingleSerie('only love'),
-        FakeEmptySingleSerie('always love'),
-        FakeEmptySingleSerie('never love'),
-        FakeEmptySingleSerie('even more love'),
+      final mockDbTvShowsSearchResult = [
+        FakeEmptyTvShow('in love'),
+        FakeEmptyTvShow('only love'),
+        FakeEmptyTvShow('always love'),
+        FakeEmptyTvShow('never love'),
+        FakeEmptyTvShow('even more love'),
       ];
-      when(mockSeriesRemoteDataSource.searchSeries(name: searchInput)).thenAnswer((_) async => mockDbSeriesSearchResult);
+      when(mockTvShowsRemoteDataSource.searchTvShows(name: searchInput)).thenAnswer((_) async => mockDbTvShowsSearchResult);
 
       // When/Act
-      movieLibrary.addEvent(SeriesLibraryEvent.searchSeries(searchInput));
+      movieLibrary.addEvent(TvShowsLibraryEvent.searchTvShows(searchInput));
 
       // Then/Assert
-      expectLater(movieLibrary.search, emits(mockDbSeriesSearchResult));
+      expectLater(movieLibrary.search, emits(mockDbTvShowsSearchResult));
     });
 
     test('WHEN search more, movie library SHOULD search from movie repository next page until no more series and stream result', () async {
       // Given/Arrange
-      final movieRepository = SeriesRepository(mockSeriesRemoteDataSource);
-      final movieLibrary = SeriesLibrary(movieRepository);
+      final movieRepository = TvShowsRepository(mockTvShowsRemoteDataSource);
+      final movieLibrary = TvShowsLibrary(movieRepository);
       const searchInput = 'love';
-      final searchResultPages = <int, List<ASeries>>{
+      final searchResultPages = <int, List<TvShow>>{
         0:[
-          FakeEmptySingleSerie('in love'),
-          FakeEmptySingleSerie('only love'),
-          FakeEmptySingleSerie('always love')
+          FakeEmptyTvShow('in love'),
+          FakeEmptyTvShow('only love'),
+          FakeEmptyTvShow('always love')
         ],
         1:[
-          FakeEmptySingleSerie('never love'),
-          FakeEmptySingleSerie('even more love'),
-          FakeEmptySingleSerie('everything is love'),
+          FakeEmptyTvShow('never love'),
+          FakeEmptyTvShow('even more love'),
+          FakeEmptyTvShow('everything is love'),
         ],
         2:[
-          FakeEmptySingleSerie('same old love'),
-          FakeEmptySingleSerie('more then just usual love'),
-          FakeEmptySingleSerie('double infinity love'),
+          FakeEmptyTvShow('same old love'),
+          FakeEmptyTvShow('more then just usual love'),
+          FakeEmptyTvShow('double infinity love'),
         ]
       };
-      when(mockSeriesRemoteDataSource.searchSeries(name: searchInput)).thenAnswer((_) async => searchResultPages[0]!);
-      when(mockSeriesRemoteDataSource.searchSeries(name: searchInput, page: 1)).thenAnswer((_) async => searchResultPages[1]!);
-      when(mockSeriesRemoteDataSource.searchSeries(name: searchInput, page: 2)).thenAnswer((_) async => searchResultPages[2]!);
-      when(mockSeriesRemoteDataSource.searchSeries(name: searchInput, page: 3)).thenAnswer((_) async => []);
+      when(mockTvShowsRemoteDataSource.searchTvShows(name: searchInput)).thenAnswer((_) async => searchResultPages[0]!);
+      when(mockTvShowsRemoteDataSource.searchTvShows(name: searchInput, page: 1)).thenAnswer((_) async => searchResultPages[1]!);
+      when(mockTvShowsRemoteDataSource.searchTvShows(name: searchInput, page: 2)).thenAnswer((_) async => searchResultPages[2]!);
+      when(mockTvShowsRemoteDataSource.searchTvShows(name: searchInput, page: 3)).thenAnswer((_) async => []);
 
       // When/Act
-      movieLibrary.addEvent(SeriesLibraryEvent.searchSeries(searchInput));
-      movieLibrary.addEvent(SeriesLibraryEvent.searchMoreSeries());
-      movieLibrary.addEvent(SeriesLibraryEvent.searchMoreSeries());
-      movieLibrary.addEvent(SeriesLibraryEvent.searchMoreSeries());
+      movieLibrary.addEvent(TvShowsLibraryEvent.searchTvShows(searchInput));
+      movieLibrary.addEvent(TvShowsLibraryEvent.searchMoreTvShows());
+      movieLibrary.addEvent(TvShowsLibraryEvent.searchMoreTvShows());
+      movieLibrary.addEvent(TvShowsLibraryEvent.searchMoreTvShows());
 
       // Then/Assert
       expectLater(movieLibrary.search, emitsInOrder([
@@ -488,19 +233,19 @@ void main() {
           }
         ],
       };
-      late ASeries aSeries;
+      late TvShow aTvShows;
 
       //When/Act
-      aSeries = ASeries.fromJson(json);
+      aTvShows = TvShow.fromJson(json);
 
       //Then/Assert
-      expect(aSeries, isNot(equals(null)));
-      expect(aSeries.name, isNot(equals(null)));
-      expect(aSeries.posterUrl, isNot(equals(null)));
-      expect(aSeries.airs, isNot(equals(null)));
-      expect(aSeries.genres, isNot(equals(null)));
-      expect(aSeries.summary, isNot(equals(null)));
-      expect(aSeries.episodes, isNot(equals(null)));
+      expect(aTvShows, isNot(equals(null)));
+      expect(aTvShows.name, isNot(equals(null)));
+      expect(aTvShows.posterUrl, isNot(equals(null)));
+      expect(aTvShows.airs, isNot(equals(null)));
+      expect(aTvShows.genres, isNot(equals(null)));
+      expect(aTvShows.summary, isNot(equals(null)));
+      expect(aTvShows.episodes, isNot(equals(null)));
     });
   });
 

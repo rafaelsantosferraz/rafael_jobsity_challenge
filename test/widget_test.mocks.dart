@@ -2,11 +2,14 @@
 // in rafael_jobsity_challenge/test/widget_test.dart.
 // Do not manually edit this file.
 
-import 'dart:async' as _i3;
+import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
-
-import 'widget_test.dart' as _i2;
+import 'package:rafael_jobsity_challenge/data/datasources/remote/tv_shows_remote_datasource.dart'
+    as _i5;
+import 'package:rafael_jobsity_challenge/data/repositories/tv_shows_repository.dart'
+    as _i2;
+import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart' as _i3;
 
 // ignore_for_file: avoid_redundant_argument_values
 // ignore_for_file: avoid_setters_without_getters
@@ -17,22 +20,22 @@ import 'widget_test.dart' as _i2;
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 
-/// A class which mocks [SeriesRepository].
+/// A class which mocks [TvShowsRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockSeriesRepository extends _i1.Mock implements _i2.SeriesRepository {
-  MockSeriesRepository() {
+class MockTvShowsRepository extends _i1.Mock implements _i2.TvShowsRepository {
+  MockTvShowsRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  List<List<_i2.ASeries>> get seriesPagination => (super.noSuchMethod(
-      Invocation.getter(#seriesPagination),
-      returnValue: <List<_i2.ASeries>>[]) as List<List<_i2.ASeries>>);
+  List<List<_i3.TvShow>> get seriesPagination =>
+      (super.noSuchMethod(Invocation.getter(#seriesPagination),
+          returnValue: <List<_i3.TvShow>>[]) as List<List<_i3.TvShow>>);
   @override
-  List<List<_i2.ASeries>> get searchPagination => (super.noSuchMethod(
-      Invocation.getter(#searchPagination),
-      returnValue: <List<_i2.ASeries>>[]) as List<List<_i2.ASeries>>);
+  List<List<_i3.TvShow>> get searchPagination =>
+      (super.noSuchMethod(Invocation.getter(#searchPagination),
+          returnValue: <List<_i3.TvShow>>[]) as List<List<_i3.TvShow>>);
   @override
   String get searchInput =>
       (super.noSuchMethod(Invocation.getter(#searchInput), returnValue: '')
@@ -42,49 +45,45 @@ class MockSeriesRepository extends _i1.Mock implements _i2.SeriesRepository {
       super.noSuchMethod(Invocation.setter(#searchInput, _searchInput),
           returnValueForMissingStub: null);
   @override
-  _i3.Future<List<_i2.ASeries>> getSeries() => (super.noSuchMethod(
-          Invocation.method(#getSeries, []),
-          returnValue: Future<List<_i2.ASeries>>.value(<_i2.ASeries>[]))
-      as _i3.Future<List<_i2.ASeries>>);
+  _i4.Future<List<_i3.TvShow>> getTvShows() =>
+      (super.noSuchMethod(Invocation.method(#getTvShows, []),
+              returnValue: Future<List<_i3.TvShow>>.value(<_i3.TvShow>[]))
+          as _i4.Future<List<_i3.TvShow>>);
   @override
-  _i3.Future<List<_i2.ASeries>> getMoreSeries() => (super.noSuchMethod(
-          Invocation.method(#getMoreSeries, []),
-          returnValue: Future<List<_i2.ASeries>>.value(<_i2.ASeries>[]))
-      as _i3.Future<List<_i2.ASeries>>);
+  _i4.Future<List<_i3.TvShow>> getMoreTvShows() =>
+      (super.noSuchMethod(Invocation.method(#getMoreTvShows, []),
+              returnValue: Future<List<_i3.TvShow>>.value(<_i3.TvShow>[]))
+          as _i4.Future<List<_i3.TvShow>>);
   @override
-  _i3.Future<List<_i2.ASeries>> searchSeries(String? name) =>
-      (super.noSuchMethod(Invocation.method(#searchSeries, [name]),
-              returnValue:
-                  Future<List<_i2.ASeries>>.value(<_i2.ASeries>[]))
-          as _i3.Future<List<_i2.ASeries>>);
+  _i4.Future<List<_i3.TvShow>> searchTvShows(String? name) =>
+      (super.noSuchMethod(Invocation.method(#searchTvShows, [name]),
+              returnValue: Future<List<_i3.TvShow>>.value(<_i3.TvShow>[]))
+          as _i4.Future<List<_i3.TvShow>>);
   @override
-  _i3.Future<List<_i2.ASeries>> searchMoreSeries() => (super.noSuchMethod(
-          Invocation.method(#searchMoreSeries, []),
-          returnValue: Future<List<_i2.ASeries>>.value(<_i2.ASeries>[]))
-      as _i3.Future<List<_i2.ASeries>>);
+  _i4.Future<List<_i3.TvShow>> searchMoreTvShows() =>
+      (super.noSuchMethod(Invocation.method(#searchMoreTvShows, []),
+              returnValue: Future<List<_i3.TvShow>>.value(<_i3.TvShow>[]))
+          as _i4.Future<List<_i3.TvShow>>);
 }
 
-/// A class which mocks [SeriesRemoteDataSource].
+/// A class which mocks [TvShowsRemoteDataSource].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockSeriesRemoteDataSource extends _i1.Mock
-    implements _i2.SeriesRemoteDataSource {
-  MockSeriesRemoteDataSource() {
+class MockTvShowsRemoteDataSource extends _i1.Mock
+    implements _i5.TvShowsRemoteDataSource {
+  MockTvShowsRemoteDataSource() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<List<_i2.ASeries>> getSeries([int? page = 0]) =>
-      (super.noSuchMethod(Invocation.method(#getSeries, [page]),
-              returnValue:
-                  Future<List<_i2.ASeries>>.value(<_i2.ASeries>[]))
-          as _i3.Future<List<_i2.ASeries>>);
+  _i4.Future<List<_i3.TvShow>> getTvShows([int? page = 0]) =>
+      (super.noSuchMethod(Invocation.method(#getTvShows, [page]),
+              returnValue: Future<List<_i3.TvShow>>.value(<_i3.TvShow>[]))
+          as _i4.Future<List<_i3.TvShow>>);
   @override
-  _i3.Future<List<_i2.ASeries>> searchSeries(
-          {String? name, int? page = 0}) =>
+  _i4.Future<List<_i3.TvShow>> searchTvShows({String? name, int? page = 0}) =>
       (super.noSuchMethod(
-              Invocation.method(#searchSeries, [], {#name: name, #page: page}),
-              returnValue:
-                  Future<List<_i2.ASeries>>.value(<_i2.ASeries>[]))
-          as _i3.Future<List<_i2.ASeries>>);
+              Invocation.method(#searchTvShows, [], {#name: name, #page: page}),
+              returnValue: Future<List<_i3.TvShow>>.value(<_i3.TvShow>[]))
+          as _i4.Future<List<_i3.TvShow>>);
 }
