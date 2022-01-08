@@ -13,9 +13,7 @@ class TvShowsRemoteDataSource{
   }
 
   Future<List<TvShow>> searchTvShows({required String name, int? page = 0}) async{
-    return [
-      TvShow(id: 0, name: 'API_TEST+plus', posterUrl: 'posterUrl', airs: DateTime.now(), genres: ['genres'], summary: 'summary', episodes: [Episode(id: 0, name: 'name', number: 0, season: 0, summary: 'summary')], rating: 0, weight: 0)
-    ]; //todo: API call
+    return tvShowsService.searchTvShow(query: name); //todo: API call
   }
 
   Future<List<Episode>> getEpisodes(int tvShowId) async{

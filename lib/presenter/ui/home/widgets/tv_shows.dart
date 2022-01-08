@@ -108,15 +108,32 @@ class _TvShowCard extends StatelessWidget {
               Expanded(
                 child: AspectRatio(
                   aspectRatio: 0.85,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
-                      boxShadow: const [kDefaultShadow],
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(tvShow.posterUrl),
+                  child: Stack(
+                    children: [
+                      Container(
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          boxShadow: const [kDefaultShadow],
+                          image: const DecorationImage(
+                            fit: BoxFit.cover,
+                            image: AssetImage(
+                                'assets/icons/movie.png'
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          boxShadow: const [kDefaultShadow],
+                          image: DecorationImage(
+                            fit: BoxFit.cover,
+                            image: NetworkImage(tvShow.posterUrl),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

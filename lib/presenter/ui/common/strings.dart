@@ -2,6 +2,7 @@
 const String tvShow = "TvShow";
 const String movies = "Movies";
 const String favorites = "Favorites";
+const String search = "Search";
 const List<String>  categories = [tvShow, favorites];
 
 List<String> genres = [

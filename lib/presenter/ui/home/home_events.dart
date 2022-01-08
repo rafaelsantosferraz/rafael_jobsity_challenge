@@ -7,7 +7,9 @@ class HomeEvent {
 
   factory HomeEvent.start() = _StartEvent;
   factory HomeEvent.categorySelect(String category) = _CategorySelectEvent;
-  factory HomeEvent.genreTapEvent(String genre) = _GenreTapEvent;
+  factory HomeEvent.genreTap(String genre) = _GenreTapEvent;
+  factory HomeEvent.searchText(String search) = _SearchTextEvent;
+  factory HomeEvent.searchToggle(bool isOpen) = _SearchToggleEvent;
 }
 
 class _StartEvent extends HomeEvent {
@@ -24,4 +26,14 @@ class _GenreTapEvent extends HomeEvent {
   final String genre;
 
   _GenreTapEvent(this.genre):super._();
+}
+
+class _SearchTextEvent extends HomeEvent {
+  final String text;
+  _SearchTextEvent(this.text):super._();
+}
+
+class _SearchToggleEvent extends HomeEvent {
+  final bool isOpen;
+  _SearchToggleEvent(this.isOpen):super._();
 }

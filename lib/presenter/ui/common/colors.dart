@@ -11,5 +11,5 @@ const Color kTextLightColor = Colors.black38;
 const Map<String, Color> kCategoryColors = {
   tvShow: Colors.blue,
   favorites: Colors.purple,
-  movies: Colors.pink,
+  search: Colors.pink,
 };

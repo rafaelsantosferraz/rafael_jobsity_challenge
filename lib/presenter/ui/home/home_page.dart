@@ -18,14 +18,24 @@ class HomePage extends StatelessWidget {
     _homeController = HomeController(),
     super(key: key){
       _homeController.state.listen((state){
-        _tvShows.value = state.tvShows;
+        if(state.isSearching){
+          _tvShowList.value = state.tvSearch;
+        } else {
+          _tvShowList.value = state.tvShows;
+        }
+        _isSearching.value = state.isSearching;
+        _color.value       = state.isSearching && !(_homeController.previousState?.isSearching ?? false) ? kCategoryColors[search]! : kCategoryColors[tvShow]!;
+        if(!state.isSearching && (_homeController.previousState?.isSearching ?? true)){
+          _selectCategory.value = tvShow;
+        }
       });
       _homeController.addEvent(HomeEvent.start());
     }
 
   final ValueNotifier<String> _selectCategory = ValueNotifier(categories[0]);
-  final ValueNotifier<Color> _color = ValueNotifier(kCategoryColors[categories[0]]!);
-  final ValueNotifier<List<TvShow>> _tvShows = ValueNotifier([]);
+  final ValueNotifier<Color>  _color = ValueNotifier(kCategoryColors[categories[0]]!);
+  final ValueNotifier<List<TvShow>> _tvShowList = ValueNotifier([]);
+  final ValueNotifier<bool> _isSearching = ValueNotifier(false);
 
   @override
   Widget build(BuildContext context) {
@@ -35,15 +45,24 @@ class HomePage extends StatelessWidget {
         return true;
       },
       child: Scaffold(
-        appBar: appBar,
+        appBar: HomeAppBar(
+          onSearchText: (text) => _onSearchText(text),
+          onSearchToggle: (isOpen) => _onSearchToggle(isOpen)
+        ),
         body: Container(
           color: kBackgroundColor,
           child: SingleChildScrollView(
             child: Column(
               children: <Widget>[
-                CategoryList(
-                  categories: categories,
-                  onCategoryChange: _onCategoryChange,
+                kVerticalGap,
+                ValueListenableBuilder<bool>(
+                    valueListenable: _isSearching,
+                    builder: (context, _isSearching, _) {
+                    return CategoryList(
+                      categories: _isSearching ? [search] : categories,
+                      onCategoryChange: _onCategoryChange,
+                    );
+                  }
                 ),
                 ValueListenableBuilder(
                   valueListenable: _selectCategory,
@@ -57,7 +76,7 @@ class HomePage extends StatelessWidget {
                 ),
                 kVerticalGap,
                 ValueListenableBuilder<List<TvShow>>(
-                    valueListenable: _tvShows,
+                    valueListenable: _tvShowList,
                     builder: (context, _tvShows, _) {
                     return TvShowsList(tvShows: _tvShows, color: _color);
                   }
@@ -80,6 +99,12 @@ class HomePage extends StatelessWidget {
   }
 
   void _onGenreTap(String genre) =>
-    _homeController.addEvent(HomeEvent.genreTapEvent(genre));
+    _homeController.addEvent(HomeEvent.genreTap(genre));
+
+  void _onSearchText(String text) =>
+      _homeController.addEvent(HomeEvent.searchText(text));
+
+  void _onSearchToggle(bool isOpen) =>
+      _homeController.addEvent(HomeEvent.searchToggle(isOpen));
   //endregion
 }

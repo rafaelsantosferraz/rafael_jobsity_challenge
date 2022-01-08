@@ -66,4 +66,19 @@ class TvMazeService {
     }
     return episodes;
   }
+
+  Future<List<TvShow>> searchTvShow({required String query}) async {
+    var tvShows = <TvShow>[];
+    try {
+      var result = await _dio.get('search/shows?q=$query');
+      var json = result.data as List<dynamic>;
+      for (var element in json) {
+        tvShows.add(TvShow.fromJson(element['show']));
+      }
+    } catch(e, s){
+      print(e);
+      print(s);
+    }
+    return tvShows;
+  }
 }
