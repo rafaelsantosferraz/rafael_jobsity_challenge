@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:rafael_jobsity_challenge/presenter/navigation/routes.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/colors.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/home/home_page.dart';
 
+import 'presenter/navigation/navigation_controller.dart';
+
 void main() {
-  runApp(const MyApp());
+  runApp(const App());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class App extends StatelessWidget {
+  const App({Key? key}) : super(key: key);
 
   // This widget is the root of your application.
   @override
@@ -18,7 +21,11 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         backgroundColor: kBackgroundColor
       ),
-      home: HomePage(),
+      home: Navigator(
+        key: NavigationController.navigatorKey,
+        initialRoute: Routes.initialRoute,
+        onGenerateRoute: NavigationController.generateRoute,
+      )
     );
   }
 }
