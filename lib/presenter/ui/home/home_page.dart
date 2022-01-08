@@ -7,7 +7,7 @@ import 'package:rafael_jobsity_challenge/presenter/ui/common/values.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/home/home_controller.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/home/widgets/appbar.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/home/widgets/categories.dart';
-import 'package:rafael_jobsity_challenge/presenter/ui/home/widgets/genres.dart';
+import 'package:rafael_jobsity_challenge/presenter/ui/common/widgets/genres.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/home/widgets/tv_shows.dart';
 
 class HomePage extends StatelessWidget {
@@ -24,6 +24,7 @@ class HomePage extends StatelessWidget {
     }
 
   final ValueNotifier<String> _selectCategory = ValueNotifier(categories[0]);
+  final ValueNotifier<Color> _color = ValueNotifier(kCategoryColors[categories[0]]!);
   final ValueNotifier<List<TvShow>> _tvShows = ValueNotifier([]);
 
   @override
@@ -50,7 +51,7 @@ class HomePage extends StatelessWidget {
                     return Genres(
                       genres: genres,
                       onGenreTap: _onGenreTap,
-                      selectedColor: kCategoryColors[_selectCategory]!
+                      color: _color
                     );
                   }
                 ),
@@ -58,7 +59,7 @@ class HomePage extends StatelessWidget {
                 ValueListenableBuilder<List<TvShow>>(
                     valueListenable: _tvShows,
                     builder: (context, _tvShows, _) {
-                    return TvShowsList(tvShows: _tvShows);
+                    return TvShowsList(tvShows: _tvShows, color: _color);
                   }
                 ),
               ],
@@ -75,6 +76,7 @@ class HomePage extends StatelessWidget {
   void _onCategoryChange(String category){
     _homeController.addEvent(HomeEvent.categorySelect(category));
     _selectCategory.value = category;
+    _color.value = kCategoryColors[category]!;
   }
 
   void _onGenreTap(String genre) =>

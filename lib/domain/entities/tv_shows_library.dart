@@ -54,6 +54,11 @@ class TvShowsLibrary{
     }
   }
 
+  //todo: move to future tv_show_library.dart
+  Future getEpisodes(int tvShowId){
+    return _tvShowsRepository.getEpisodes(tvShowId);
+  }
+
   close(){
     _tvShowsStream.close();
   }

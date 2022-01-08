@@ -21,7 +21,10 @@ void main() {
         airs: DateTime.now(),
         genres: [],
         summary: "",
-        episodes: []);
+        episodes: [],
+        rating: 0,
+        weight: 0
+    );
   }
   group('List all of the series contained in the API used by the paging scheme provided by the API.', (){
 
@@ -205,13 +208,15 @@ void main() {
     test('When parse from json, series SHOULD have Name, Poster, Days and time during which the series airs, Genres, Summary, List of episodes separated by season', (){
       //Given/Arrange
       var json = {
+        'id': 0,
         'name': 'name',
         'posterUrl': 'posterUrl',
-        'airs': DateTime.now().millisecondsSinceEpoch,
+        'airstamp': '2022-01-01T15:00:00+00:00',
         'genres': ['love, horror'],
         'summary': 'summary',
         'episodes': [
           {
+            'id': 0,
             'name': 'name',
             'number': 1,
             'season': 1,
@@ -219,6 +224,7 @@ void main() {
             'imageUrl': 'imageUrl'
           },
           {
+            'id': 1,
             'name': 'name',
             'number': 1,
             'season': 1,
@@ -226,6 +232,7 @@ void main() {
             'imageUrl': 'imageUrl'
           },
           {
+            'id': 2,
             'name': 'name',
             'number': 1,
             'season': 1,
@@ -255,6 +262,7 @@ void main() {
     test('When parse from json, episode SHOULD have Name, Number, Season, Image if there is one', (){
       //Given/Arrange
       var json = {
+        'id': 0,
         'name': 'name',
         'number': 1,
         'season': 1,

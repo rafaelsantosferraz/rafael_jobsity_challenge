@@ -1,26 +1,32 @@
 class Episode {
 
+  final int id;
   final String name;
   final int number;
   final int season;
-  final String summary;
   final String? imageUrl;
+  final DateTime? airs;
+  final String summary;
 
   Episode({
+    required this.id,
     required this.name,
     required this.number,
     required this.season,
-    required this.summary,
     this.imageUrl,
+    this.airs,
+    required this.summary
   });
 
   factory Episode.fromJson(Map<String, dynamic> json){
     return Episode(
+        id: json['id'],
         name: json['name'],
+        imageUrl: json['image']?['medium'] ?? '',
         number: json['number'],
         season: json['season'],
-        summary: json['summary'],
-        imageUrl: json['imageUrl']
+        airs: json['airstamp'] != null ? DateTime.parse(json['airstamp']) : null,
+        summary: json['summary'] ?? ''
     );
   }
 }

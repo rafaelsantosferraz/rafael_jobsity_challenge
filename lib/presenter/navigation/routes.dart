@@ -9,7 +9,7 @@ class Routes {
   static MaterialPageRoute getPage(String? route){
     switch(route){
       case home: return MaterialPageRoute(builder: (_) => HomePage());
-      default: return MaterialPageRoute(builder: (_) => HomePage());
+      default:   return MaterialPageRoute(builder: (_) => HomePage());
     }
   }
 }

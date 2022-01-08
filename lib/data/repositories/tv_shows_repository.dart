@@ -1,4 +1,5 @@
 import 'package:rafael_jobsity_challenge/data/datasources/remote/tv_shows_remote_datasource.dart';
+import 'package:rafael_jobsity_challenge/domain/entities/episode.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/pagination.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
 import 'package:rafael_jobsity_challenge/domain/repositories_interfaces/tv_shows_repository_interface.dart';
@@ -47,5 +48,11 @@ class TvShowsRepository implements TvShowsRepositoryInterface {
     var series = await _tvShowsRemoteDataSource.searchTvShows(name: searchInput, page: searchPagination.length);
     searchPagination.add(series);
     return searchPagination.getAll();
+  }
+
+  @override
+  Future<List<Episode>> getEpisodes(int tvShowId) async{
+    var episodes = await _tvShowsRemoteDataSource.getEpisodes(tvShowId);
+    return episodes;
   }
 }

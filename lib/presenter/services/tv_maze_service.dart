@@ -21,10 +21,26 @@ class TvMazeService {
     )
   );
 
-  Future<List<TvShow>> getTvShows() async {
+  Future<List<TvShow>> getSchedule({String country = 'US'}) async {
     var tvShows = <TvShow>[];
     try {
-      var result = await _dio.get('schedule?country=US&date=2021-12-01');
+      var result = await _dio.get('schedule?country=$country');
+      var json = result.data as List<dynamic>;
+      for (var element in json) {
+        element['show']['airstamp'] = element['airstamp'] ;
+        tvShows.add(TvShow.fromJson(element['show']));
+      }
+    } catch(e, s){
+      print(e);
+      print(s);
+    }
+    return tvShows;
+  }
+
+  Future<List<TvShow>> getTvShows({int page = 0}) async {
+    var tvShows = <TvShow>[];
+    try {
+      var result = await _dio.get('shows?page=$page');
       var json = result.data as List<dynamic>;
       for (var element in json) {
         tvShows.add(TvShow.fromJson(element));
@@ -34,5 +50,20 @@ class TvMazeService {
       print(s);
     }
     return tvShows;
+  }
+
+  Future<List<Episode>> getEpisodes({required int id}) async {
+    var episodes = <Episode>[];
+    try {
+      var result = await _dio.get('shows/$id/episodes');
+      var json = result.data as List<dynamic>;
+      for (var element in json) {
+        episodes.add(Episode.fromJson(element));
+      }
+    } catch(e, s){
+      print(e);
+      print(s);
+    }
+    return episodes;
   }
 }
