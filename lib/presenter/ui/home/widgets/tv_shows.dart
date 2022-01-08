@@ -2,13 +2,17 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
+import 'package:rafael_jobsity_challenge/presenter/ui/common/strings.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/values.dart';
 
 import 'dart:math' as math;
 
 
 class TvShowsList extends StatefulWidget {
-  const TvShowsList({Key? key}) : super(key: key);
+
+  final List<TvShow> tvShows;
+
+  const TvShowsList({Key? key,required this.tvShows}) : super(key: key);
 
   @override
   _TvShowsListState createState() => _TvShowsListState();
@@ -16,18 +20,19 @@ class TvShowsList extends StatefulWidget {
 
 class _TvShowsListState extends State<TvShowsList> {
   late PageController _pageController;
-  int initialPage = 1;
+  int initialPage = 0;
 
-  final tvShows = List<TvShow>.generate(3, (index) =>
-    TvShow(
-      name: '$index',
-      posterUrl: "",
-      airs: DateTime.now(),
-      genres: [],
-      summary: "",
-      episodes: []
-    )
-  );
+  // final tvShows = List<TvShow>.generate(3, (index) =>
+  //   TvShow(
+  //     id: 0,
+  //     name: '$index',
+  //     posterUrl: "",
+  //     airs: DateTime.now(),
+  //     genres: [],
+  //     summary: "",
+  //     episodes: []
+  //   )
+  // );
 
 
 
@@ -62,15 +67,15 @@ class _TvShowsListState extends State<TvShowsList> {
           },
           controller: _pageController,
           physics: const ClampingScrollPhysics(),
-          itemCount: tvShows.length, // we have 3 demo movies
+          itemCount: widget.tvShows.length, // we have 3 demo movies
           itemBuilder: (context, index) =>
             AnimatedBuilder(
               animation: _pageController,
               builder: (context, child) {
                 return AnimatedOpacity(
                   duration: const Duration(milliseconds: kAnimationDuration),
-                  opacity: initialPage == index ? 1 : 0.4,
-                  child: _TvShowCard(tvShow: tvShows[index]),
+                  opacity: initialPage == index ? 1 : 0.8,
+                  child: _TvShowCard(tvShow: widget.tvShows[index], index: index),
                 );
               }
             ),
@@ -82,8 +87,9 @@ class _TvShowsListState extends State<TvShowsList> {
 
 class _TvShowCard extends StatelessWidget {
   final TvShow tvShow;
+  final int index;
 
-  const _TvShowCard({Key? key, required this.tvShow}) : super(key: key);
+  const _TvShowCard({Key? key, required this.tvShow, required this.index}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -101,34 +107,39 @@ class _TvShowCard extends StatelessWidget {
     return Column(
       children: <Widget>[
         Expanded(
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(50),
-              boxShadow: const [kDefaultShadow],
-              image: DecorationImage(
-                fit: BoxFit.fill,
-                image: AssetImage(tvShow.posterUrl),
+          child: AspectRatio(
+            aspectRatio: 0.85,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                boxShadow: const [kDefaultShadow],
+                image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: NetworkImage(tvShow.posterUrl),
+
+                ),
               ),
             ),
           ),
         ),
-        // Padding(
-        //   padding: const EdgeInsets.symmetric(vertical: kDefaultPadding / 2),
-        //   child: Text(
-        //     tvShow.name,
-        //     style: Theme.of(context)
-        //         .textTheme
-        //         .headline5!
-        //         .copyWith(fontWeight: FontWeight.w600),
-        //   ),
-        // ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: kDefaultPadding / 2),
+          child: Text(
+            tvShow.name,
+            maxLines: 1,
+            style: Theme.of(context)
+                .textTheme
+                .headline5!
+                .copyWith(fontWeight: FontWeight.w600),
+          ),
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            SvgPicture.asset(
-              "assets/icons/star_fill.svg",
-              height: 20,
-            ),
+          children: const <Widget>[
+            // SvgPicture.asset(
+            //   "assets/icons/star_fill.svg",
+            //   height: 20,
+            // ),
             // const SizedBox(width: kDefaultPadding / 2),
             // Text(
             //   "${tvshow.rating}",

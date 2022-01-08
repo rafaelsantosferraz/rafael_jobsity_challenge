@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/colors.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/strings.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/values.dart';
@@ -16,42 +17,59 @@ class HomePage extends StatelessWidget {
   HomePage({Key? key}):
     _homeController = HomeController(),
     super(key: key){
+      _homeController.state.listen((state){
+        _tvShows.value = state.tvShows;
+      });
       _homeController.addEvent(HomeEvent.start());
     }
 
   final ValueNotifier<String> _selectCategory = ValueNotifier(categories[0]);
+  final ValueNotifier<List<TvShow>> _tvShows = ValueNotifier([]);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: appBar,
-      body: Container(
-        color: kBackgroundColor,
-        child: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              CategoryList(
-                categories: categories,
-                onCategoryChange: _onCategoryChange,
-              ),
-              ValueListenableBuilder(
-                valueListenable: _selectCategory,
-                builder: (context, _selectCategory, _) {
-                  return Genres(
-                    genres: genres,
-                    onGenreTap: _onGenreTap,
-                    selectedColor: kCategoryColors[_selectCategory]!
-                  );
-                }
-              ),
-              kVerticalGap,
-              const TvShowsList(),
-            ],
+    return WillPopScope(
+      onWillPop: () async {
+        _homeController.close();
+        return true;
+      },
+      child: Scaffold(
+        appBar: appBar,
+        body: Container(
+          color: kBackgroundColor,
+          child: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                CategoryList(
+                  categories: categories,
+                  onCategoryChange: _onCategoryChange,
+                ),
+                ValueListenableBuilder(
+                  valueListenable: _selectCategory,
+                  builder: (context, _selectCategory, _) {
+                    return Genres(
+                      genres: genres,
+                      onGenreTap: _onGenreTap,
+                      selectedColor: kCategoryColors[_selectCategory]!
+                    );
+                  }
+                ),
+                kVerticalGap,
+                ValueListenableBuilder<List<TvShow>>(
+                    valueListenable: _tvShows,
+                    builder: (context, _tvShows, _) {
+                    return TvShowsList(tvShows: _tvShows);
+                  }
+                ),
+              ],
+            ),
           ),
-        ),
-      )
+        )
+      ),
     );
   }
+
+
 
   //region Private -------------------------------------------------------------
   void _onCategoryChange(String category){

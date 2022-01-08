@@ -1,4 +1,5 @@
 import 'package:rafael_jobsity_challenge/data/datasources/remote/tv_shows_remote_datasource.dart';
+import 'package:rafael_jobsity_challenge/domain/entities/pagination.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
 import 'package:rafael_jobsity_challenge/domain/repositories_interfaces/tv_shows_repository_interface.dart';
 
@@ -8,27 +9,27 @@ class TvShowsRepository implements TvShowsRepositoryInterface {
 
   TvShowsRepository(this._tvShowsRemoteDataSource);
 
-  final seriesPagination = <List<TvShow>>[];
-  final searchPagination = <List<TvShow>>[];
+  final tvShowsPagination = Pagination<TvShow>();
+  final searchPagination = Pagination<TvShow>();
   String searchInput = '';
 
   ///Get first page of series
   @override
   Future<List<TvShow>> getTvShows() async{
     var series = await _tvShowsRemoteDataSource.getTvShows();
-    seriesPagination.clear();
-    seriesPagination.add(series);
-    return seriesPagination.expand<TvShow>((pageSeries) => pageSeries).toList();
+    tvShowsPagination.clear();
+    tvShowsPagination.add(series);
+    return tvShowsPagination.getAll();
   }
 
   ///Get next page series. If there's no more pages, it return list without
   ///changes
   @override
   Future<List<TvShow>> getMoreTvShows() async{
-    assert(seriesPagination.isNotEmpty);
-    var series = await _tvShowsRemoteDataSource.getTvShows(seriesPagination.length);
-    seriesPagination.add(series);
-    return seriesPagination.expand<TvShow>((pageSeries) => pageSeries).toList();
+    assert(tvShowsPagination.isNotEmpty);
+    var series = await _tvShowsRemoteDataSource.getTvShows(tvShowsPagination.length);
+    tvShowsPagination.add(series);
+    return tvShowsPagination.getAll();
   }
 
   @override
@@ -37,7 +38,7 @@ class TvShowsRepository implements TvShowsRepositoryInterface {
     var series = await _tvShowsRemoteDataSource.searchTvShows(name: name);
     searchPagination.clear();
     searchPagination.add(series);
-    return searchPagination.expand<TvShow>((pageSeries) => pageSeries).toList();
+    return searchPagination.getAll();
   }
 
   @override
@@ -45,6 +46,6 @@ class TvShowsRepository implements TvShowsRepositoryInterface {
     assert(searchPagination.isNotEmpty);
     var series = await _tvShowsRemoteDataSource.searchTvShows(name: searchInput, page: searchPagination.length);
     searchPagination.add(series);
-    return searchPagination.expand<TvShow>((pageSeries) => pageSeries).toList();
+    return searchPagination.getAll();
   }
 }

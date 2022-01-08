@@ -15,6 +15,7 @@ void main() {
 
   TvShow FakeEmptyTvShow(String name){
     return TvShow(
+        id: 0,
         name: name,
         posterUrl: "",
         airs: DateTime.now(),
@@ -30,7 +31,7 @@ void main() {
     test('WHEN tvShows library start, tvShows library SHOULD fetch from tvShows repository and stream result ', () async {
       // Given/Arrange
 
-      final tvShowsLibrary = TvShowsLibrary(mockTvShowsRepository);
+      final tvShowsLibrary = TvShowsLibrary.instanceWith(mockTvShowsRepository);
       final mockDbTvShows = [
         FakeEmptyTvShow('1'),
         FakeEmptyTvShow('2'),
@@ -50,7 +51,7 @@ void main() {
     test('WHEN get more series, tvShows library SHOULD fetch from tvShows repository next page until no more series and stream result', () async {
       // Given/Arrange
       final tvShowsRepository = TvShowsRepository(mockTvShowsRemoteDataSource);
-      var tvShowsLibrary = TvShowsLibrary(tvShowsRepository);
+      var tvShowsLibrary = TvShowsLibrary.instanceWith(tvShowsRepository);
       final seriesByPage = <int, List<TvShow>>{
         0:[
           FakeEmptyTvShow('01'),
@@ -106,7 +107,7 @@ void main() {
     test('WHEN user input search parameter, SHOULD fetch from tvShows repository series with that input parameter and stream result ', () async {
       // Given/Arrange
       final tvShowsRepository = TvShowsRepository(mockTvShowsRemoteDataSource);
-      final tvShowsLibrary = TvShowsLibrary(tvShowsRepository);
+      final tvShowsLibrary = TvShowsLibrary.instanceWith(tvShowsRepository);
       const searchInput = 'love';
       final mockDbTvShowsSearchResult = [
         FakeEmptyTvShow('in love'),
@@ -127,7 +128,7 @@ void main() {
     test('WHEN user input search parameter, SHOULD search from tvShows repository series with that input parameter and stream result ', () async {
       // Given/Arrange
       final tvShowsRepository = TvShowsRepository(mockTvShowsRemoteDataSource);
-      final tvShowsLibrary = TvShowsLibrary(tvShowsRepository);
+      final tvShowsLibrary = TvShowsLibrary.instanceWith(tvShowsRepository);
       const searchInput = 'love';
       final mockDbTvShowsSearchResult = [
         FakeEmptyTvShow('in love'),
@@ -148,7 +149,7 @@ void main() {
     test('WHEN search more, tvShows library SHOULD search from tvShows repository next page until no more series and stream result', () async {
       // Given/Arrange
       final tvShowsRepository = TvShowsRepository(mockTvShowsRemoteDataSource);
-      final tvShowsLibrary = TvShowsLibrary(tvShowsRepository);
+      final tvShowsLibrary = TvShowsLibrary.instanceWith(tvShowsRepository);
       const searchInput = 'love';
       final searchResultPages = <int, List<TvShow>>{
         0:[

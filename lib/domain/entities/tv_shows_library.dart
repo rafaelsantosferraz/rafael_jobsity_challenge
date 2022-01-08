@@ -1,20 +1,38 @@
 import 'dart:async';
 
+import 'package:rafael_jobsity_challenge/data/datasources/remote/tv_shows_remote_datasource.dart';
+import 'package:rafael_jobsity_challenge/data/repositories/tv_shows_repository.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
 import 'package:rafael_jobsity_challenge/domain/repositories_interfaces/tv_shows_repository_interface.dart';
+import 'package:rafael_jobsity_challenge/presenter/services/tv_maze_service.dart';
 
-typedef TvShows = Stream<List<TvShow>>;
+
 class TvShowsLibrary{
 
   final TvShowsRepositoryInterface _tvShowsRepository;
-  TvShowsLibrary(this._tvShowsRepository);
+  TvShowsLibrary._(this._tvShowsRepository);
 
-  final StreamController<List<TvShow>> _tvShowsStream = StreamController();
-  final StreamController<List<TvShow>> _searchStream  = StreamController();
+  static TvShowsLibrary? _instance;
+  static TvShowsLibrary get instance => TvShowsLibrary._getInstance();
+
+  factory TvShowsLibrary._getInstance() {
+    return _instance ??= TvShowsLibrary._(TvShowsRepository(TvShowsRemoteDataSource(TvMazeService.instance)));
+  }
+
+  factory TvShowsLibrary.instanceWith(TvShowsRepository tvShowsRepository) {
+    return TvShowsLibrary._(tvShowsRepository);
+  }
+
+  final StreamController<List<TvShow>> _tvShowsStream = StreamController.broadcast();
+  final StreamController<List<TvShow>> _searchStream  = StreamController.broadcast();
 
 
-  TvShows get tvShows => _tvShowsStream.stream;
-  TvShows get search => _searchStream.stream;
+  int counter = 0;
+  Stream<List<TvShow>> get tvShows {
+    print('stream ${counter++}');
+    return _tvShowsStream.stream;
+  }
+  Stream<List<TvShow>> get search => _searchStream.stream;
 
   final _eventsQueue = <TvShowsLibraryEvent>[];
   final _eventsHistory = <TvShowsLibraryEvent>[];

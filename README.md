@@ -43,3 +43,6 @@ Rafael Ferraz Jobsity interview challenge
   
 - 8th:
   Start basic home Ui
+  
+- 9th:
+  Fetch data and bind data

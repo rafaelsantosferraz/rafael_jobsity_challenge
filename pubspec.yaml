@@ -35,6 +35,8 @@ dependencies:
   flutter_svg: ^1.0.0
   # https://pub.dev/packages/animations
   animations: ^2.0.2
+  # https://pub.dev/packages/dio
+  dio: ^4.0.4
 
 dev_dependencies:
   flutter_test:
