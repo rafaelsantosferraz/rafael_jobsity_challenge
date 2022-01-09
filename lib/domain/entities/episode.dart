@@ -4,7 +4,8 @@ class Episode {
   final String name;
   final int number;
   final int season;
-  final String? imageUrl;
+  final String? thumb;
+  final String? poster;
   final DateTime? airs;
   final String summary;
 
@@ -13,7 +14,8 @@ class Episode {
     required this.name,
     required this.number,
     required this.season,
-    this.imageUrl,
+    this.thumb,
+    this.poster,
     this.airs,
     required this.summary
   });
@@ -22,7 +24,8 @@ class Episode {
     return Episode(
         id: json['id'],
         name: json['name'],
-        imageUrl: json['image']?['medium'] ?? '',
+        thumb: json['image']?['medium'] ?? '',
+        poster: json['image']?['original'] ?? '',
         number: json['number'],
         season: json['season'],
         airs: json['airstamp'] != null ? DateTime.parse(json['airstamp']) : null,

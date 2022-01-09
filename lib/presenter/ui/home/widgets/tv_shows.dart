@@ -2,8 +2,6 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
-import 'package:rafael_jobsity_challenge/presenter/navigation/routes.dart';
-import 'package:rafael_jobsity_challenge/presenter/ui/common/strings.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/values.dart';
 
 import 'dart:math' as math;

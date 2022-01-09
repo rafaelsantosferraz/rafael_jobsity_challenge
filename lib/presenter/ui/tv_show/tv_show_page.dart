@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/episode.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
+import 'package:rafael_jobsity_challenge/presenter/ui/common/colors.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/strings.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/values.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/widgets/genres.dart';
@@ -69,7 +70,7 @@ class TvShowPage extends StatelessWidget {
               child: Text(
                 tvShow.summary.replaceAll(RegExp(r'<[^>]*>'), ""),
                 style: const TextStyle(
-                  color: Color(0xFF737599),
+                  color: kTextLightColor,
                 ),
               ),
             ),
@@ -108,11 +109,11 @@ class TvShowPage extends StatelessWidget {
                               kVerticalGap,
                               Text('Season ${episode.season}', style: Theme.of(context).textTheme.headline6,),
                               kVerticalGap,
-                              EpisodeView(episode: episode)
+                              EpisodeTile(episode: episode)
                             ]
                           );
                         }
-                        return EpisodeView(episode: episode);
+                        return EpisodeTile(episode: episode);
                       }
                   );
                 }

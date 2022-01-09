@@ -33,7 +33,7 @@ class Header extends StatelessWidget {
                 Row(
                   children: <Widget>[
                     Text(
-                      tvShow.premiered != null ?  'Release on ${tvShow.premiered!.year}-${tvShow.premiered!.month}-${tvShow.premiered!.day}' : '',
+                      tvShow.premiered != null ?  'Released on ${tvShow.premiered!.year}-${tvShow.premiered!.month}-${tvShow.premiered!.day}' : '',
                       style: const TextStyle(color: kTextLightColor),
                     ),
                   ],

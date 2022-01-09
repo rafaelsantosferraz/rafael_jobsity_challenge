@@ -280,7 +280,7 @@ void main() {
       expect(episode.number, isNot(equals(null)));
       expect(episode.season, isNot(equals(null)));
       expect(episode.summary, isNot(equals(null)));
-      expect(episode.imageUrl, isNot(equals(null)));
+      expect(episode.thumb, isNot(equals(null)));
     });
   });
 }

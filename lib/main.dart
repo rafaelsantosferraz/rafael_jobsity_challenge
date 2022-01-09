@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rafael_jobsity_challenge/presenter/navigation/routes.dart';
+import 'package:rafael_jobsity_challenge/presenter/navigation/navigation_routes.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/colors.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/home/home_page.dart';
 
@@ -23,7 +23,7 @@ class App extends StatelessWidget {
       ),
       home: Navigator(
         key: NavigationController.navigatorKey,
-        initialRoute: Routes.initialRoute,
+        initialRoute: NavigationRoutes.initialRoute,
         onGenerateRoute: NavigationController.generateRoute,
       )
     );
