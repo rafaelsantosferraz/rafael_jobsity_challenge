@@ -28,8 +28,6 @@ class HomeController {
   HomeState? _previousState;
   HomeState? get previousState => _previousState;
 
-  Function(List<TvShow>)? searchListener;
-
 
   //region Public --------------------------------------------------------------
   addEvent(HomeEvent event){

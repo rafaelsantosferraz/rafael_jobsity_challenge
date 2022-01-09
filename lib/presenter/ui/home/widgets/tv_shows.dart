@@ -2,6 +2,7 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
+import 'package:rafael_jobsity_challenge/presenter/ui/common/colors.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/values.dart';
 
 import 'dart:math' as math;
@@ -113,10 +114,11 @@ class _TvShowCard extends StatelessWidget {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(50),
                           boxShadow: const [kDefaultShadow],
+                          color: kTextLightColor,
                           image: const DecorationImage(
                             fit: BoxFit.cover,
                             image: AssetImage(
-                                'assets/icons/movie.png'
+                                'assets/icons/movie.png',
                             ),
                           ),
                         ),

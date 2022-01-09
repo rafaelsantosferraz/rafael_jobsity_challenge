@@ -1,10 +1,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
+import 'package:rafael_jobsity_challenge/presenter/navigation/navigation_controller.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/colors.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/strings.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/values.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/home/home_controller.dart';
+import 'package:rafael_jobsity_challenge/presenter/ui/home/home_state.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/home/widgets/appbar.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/home/widgets/categories.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/widgets/genres.dart';
@@ -17,20 +19,22 @@ class HomePage extends StatelessWidget {
   HomePage({Key? key}):
     _homeController = HomeController(),
     super(key: key){
-      _homeController.state.listen((state){
-        if(state.isSearching){
-          _tvShowList.value = state.tvSearch;
-        } else {
-          _tvShowList.value = state.tvShows;
-        }
-        _isSearching.value = state.isSearching;
-        _color.value       = state.isSearching && !(_homeController.previousState?.isSearching ?? false) ? kCategoryColors[search]! : kCategoryColors[tvShow]!;
-        if(!state.isSearching && (_homeController.previousState?.isSearching ?? true)){
-          _selectCategory.value = tvShow;
-        }
-      });
+      _homeController.state.listen(onStateChange);
       _homeController.addEvent(HomeEvent.start());
     }
+
+  void onStateChange(HomeState state){
+    if(state.isSearching){
+      _tvShowList.value = state.tvSearch;
+    } else {
+      _tvShowList.value = state.tvShows;
+    }
+    _isSearching.value = state.isSearching;
+    _color.value       = state.isSearching && !(_homeController.previousState?.isSearching ?? false) ? kCategoryColors[search]! : kCategoryColors[tvShow]!;
+    if(!state.isSearching && (_homeController.previousState?.isSearching ?? true)){
+      _selectCategory.value = tvShow;
+    }
+  }
 
   final ValueNotifier<String> _selectCategory = ValueNotifier(categories[0]);
   final ValueNotifier<Color>  _color = ValueNotifier(kCategoryColors[categories[0]]!);
@@ -39,6 +43,9 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      NavigationController.addEvent(NavigationEvent.homeReady(NavigationController.navigatorKey.currentContext!));
+    });
     return WillPopScope(
       onWillPop: () async {
         _homeController.close();

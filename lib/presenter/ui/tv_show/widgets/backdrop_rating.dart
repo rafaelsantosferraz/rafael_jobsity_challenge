@@ -131,12 +131,19 @@ class BackdropAndRating extends StatelessWidget {
           ),
           // Back Button
           SafeArea(
-            child: Container(
-              decoration: BoxDecoration(
-                color: kBackgroundColor.withOpacity(.6),
-                borderRadius: const BorderRadius.all(Radius.circular(100))
-              ),
-              child: const BackButton()
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  height: 24 + 12,
+                  width:  24 + 12,
+                  decoration: BoxDecoration(
+                  color: kBackgroundColor.withOpacity(.6),
+                    borderRadius: const BorderRadius.all(Radius.circular(100))
+                  )
+                ),
+                const BackButton(),
+              ],
             )
           ),
         ],

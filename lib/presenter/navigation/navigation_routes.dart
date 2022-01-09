@@ -7,4 +7,5 @@ class NavigationRoutes {
   static const String home = '/';
   static const String tvShows = '/tv_shows';
   static const String episode = '/tv_shows/episode';
+  static const String pinCode = '/pin_code';
 }
