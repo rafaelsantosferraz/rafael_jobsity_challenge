@@ -1,9 +1,12 @@
 import 'dart:async';
 
+import 'package:flutter/services.dart';
 import 'package:rafael_jobsity_challenge/data/datasources/local/pin_code_local_datasource.dart';
 import 'package:rafael_jobsity_challenge/data/repositories/pin_code_repository.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/pin_code.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/pin_code/pin_code_state.dart';
+import 'package:local_auth/local_auth.dart';
+import 'package:local_auth/error_codes.dart' as auth_error;
 
 part 'pin_code_events.dart';
 
@@ -53,6 +56,9 @@ class PinCodeController {
   _onStartEvent(_StartEvent event) async {
     bool isPinSet = await pinCode.checkPin('') != null;
     _update(currentState.copyWith(isPinSet: isPinSet, isLoading: false));
+    if(isPinSet){
+      _checkFingerPrint();
+    }
   }
 
   _onPinCodeTextEvent(_PinTextEvent event) async {
@@ -77,6 +83,26 @@ class PinCodeController {
           _update(currentState.copyWith(isError: true));
           _update(currentState.copyWith(isError: false));
         }
+    }
+  }
+
+  _checkFingerPrint() async {
+    var localAuth = LocalAuthentication();
+    if(await localAuth.canCheckBiometrics) {
+      try {
+        bool didAuthenticate = await localAuth.authenticate(
+            localizedReason: 'Cancel to use pin code instead',
+            useErrorDialogs: false,
+            biometricOnly: true
+        );
+        if(didAuthenticate){
+          _update(currentState.copyWith(isSuccess: true));
+        }
+      } on PlatformException catch (e) {
+        if (e.code == auth_error.notAvailable) {
+          print('No');
+        }
+      }
     }
   }
 
