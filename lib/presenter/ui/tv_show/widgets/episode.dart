@@ -27,7 +27,7 @@ class EpisodeTile extends StatelessWidget {
               ),
             ),
             const SizedBox(width: kDefaultPadding/2,),
-            Text(episode.name)
+            Flexible(child:Text(episode.name))
           ],
         ),
       ),
