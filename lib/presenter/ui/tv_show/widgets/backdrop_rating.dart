@@ -21,13 +21,16 @@ class BackdropAndRating extends StatelessWidget {
       height: size.height * 0.5,
       child: Stack(
         children: <Widget>[
-          Container(
-            height: size.height * 0.5 - 50,
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(50)),
-              image: DecorationImage(
-                fit: BoxFit.cover,
-                image: NetworkImage(tvShow.posterUrl),
+          Hero(
+            tag: 'hero',
+            child: Container(
+              height: size.height * 0.5 - 50,
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(50)),
+                image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: NetworkImage(tvShow.posterUrl),
+                ),
               ),
             ),
           ),

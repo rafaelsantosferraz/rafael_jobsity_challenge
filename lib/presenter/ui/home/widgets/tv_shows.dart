@@ -1,22 +1,18 @@
-import 'package:animations/animations.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
+import 'package:rafael_jobsity_challenge/presenter/navigation/navigation_controller.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/colors.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/values.dart';
-
-import 'dart:math' as math;
-
-import 'package:rafael_jobsity_challenge/presenter/ui/tv_show/tv_show_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 
 class TvShowsList extends StatefulWidget {
 
   final List<TvShow> tvShows;
   final ValueNotifier<Color> color;
+  final List<String> selectedGenres;
 
-  const TvShowsList({Key? key,required this.tvShows, required this.color}) : super(key: key);
+  const TvShowsList({Key? key,required this.tvShows, required this.color, required this.selectedGenres}) : super(key: key);
 
   @override
   _TvShowsListState createState() => _TvShowsListState();
@@ -25,20 +21,6 @@ class TvShowsList extends StatefulWidget {
 class _TvShowsListState extends State<TvShowsList> {
   late PageController _pageController;
   int initialPage = 0;
-
-  // final tvShows = List<TvShow>.generate(3, (index) =>
-  //   TvShow(
-  //     id: 0,
-  //     name: '$index',
-  //     posterUrl: "",
-  //     airs: DateTime.now(),
-  //     genres: [],
-  //     summary: "",
-  //     episodes: []
-  //   )
-  // );
-
-
 
   @override
   void initState() {
@@ -59,19 +41,20 @@ class _TvShowsListState extends State<TvShowsList> {
 
   @override
   Widget build(BuildContext context) {
+    var filteredTvShows = _filter(widget.tvShows, widget.selectedGenres);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: kDefaultPadding),
       child: AspectRatio(
         aspectRatio: 0.85,
         child: PageView.builder(
-          onPageChanged: (value) {
-            setState(() {
-              initialPage = value;
-            });
-          },
+          // onPageChanged: (value) {
+          //   setState(() {
+          //     initialPage = value;
+          //   });
+          // },
           controller: _pageController,
           physics: const ClampingScrollPhysics(),
-          itemCount: widget.tvShows.length, // we have 3 demo movies
+          itemCount: filteredTvShows.length, // we have 3 demo movies
           itemBuilder: (context, index) =>
             AnimatedBuilder(
               animation: _pageController,
@@ -79,13 +62,27 @@ class _TvShowsListState extends State<TvShowsList> {
                 return AnimatedOpacity(
                   duration: const Duration(milliseconds: kAnimationDuration),
                   opacity: initialPage == index ? 1 : 0.8,
-                  child: _TvShowCard(tvShow: widget.tvShows[index], index: index, color: widget.color,),
+                  child: _TvShowCard(tvShow: filteredTvShows[index], index: index, color: widget.color,),
                 );
               }
             ),
         ),
       ),
     );
+  }
+
+  List<TvShow> _filter(List<TvShow> tvShows, List<String> selectedGenres){
+    if(selectedGenres.isEmpty){
+      return tvShows;
+    }
+    var filteredTvShow = tvShows.where((tvShow) {
+      bool isGenre = true;
+      for (var genre in selectedGenres) {
+        isGenre = tvShow.genres.contains(genre) && isGenre;
+      }
+      return isGenre;
+    }).toList();
+    return filteredTvShow;
   }
 }
 
@@ -99,32 +96,32 @@ class _TvShowCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
-      child: OpenContainer(
-        closedElevation: 0,
-        openElevation: 0,
-        closedBuilder: (context, action) {
-          return Column(
-            children: <Widget>[
-              Expanded(
-                child: AspectRatio(
-                  aspectRatio: 0.85,
-                  child: Stack(
-                    children: [
-                      Container(
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50),
-                          boxShadow: const [kDefaultShadow],
-                          color: kTextLightColor,
-                          image: const DecorationImage(
-                            fit: BoxFit.cover,
-                            image: AssetImage(
-                                'assets/icons/movie.png',
-                            ),
+      child: GestureDetector(
+        onTap: () => _onClick(context),
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: AspectRatio(
+                aspectRatio: 0.85,
+                child: Stack(
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50),
+                        boxShadow: const [kDefaultShadow],
+                        color: kTextLightColor,
+                        image: const DecorationImage(
+                          fit: BoxFit.cover,
+                          image: AssetImage(
+                            'assets/icons/movie.png',
                           ),
                         ),
                       ),
-                      Container(
+                    ),
+                    Hero(
+                      tag: 'hero',
+                      child: Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(50),
                           boxShadow: const [kDefaultShadow],
@@ -134,31 +131,34 @@ class _TvShowCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              kVerticalGap,
-              kVerticalGap,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const <Widget>[
-                  // SvgPicture.asset(
-                  //   "assets/icons/star_fill.svg",
-                  //   height: 20,
-                  // ),
-                  // const SizedBox(width: kDefaultPadding / 2),
-                  // Text(
-                  //   "${tvshow.rating}",
-                  //   style: Theme.of(context).textTheme.bodyText2,
-                  // )
-                ],
-              )
-            ],
-          );
-        },
-        openBuilder: (context, action)   => TvShowPage(tvShow: tvShow, color: color),
+            ),
+            kVerticalGap,
+            kVerticalGap,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const <Widget>[
+                // SvgPicture.asset(
+                //   "assets/icons/star_fill.svg",
+                //   height: 20,
+                // ),
+                // const SizedBox(width: kDefaultPadding / 2),
+                // Text(
+                //   "${tvshow.rating}",
+                //   style: Theme.of(context).textTheme.bodyText2,
+                // )
+              ],
+            )
+          ],
+        ),
       ),
     );
+  }
+
+  _onClick(BuildContext context){
+    NavigationController.addEvent(NavigationEvent.goToTvShow(context, tvShow, color));
   }
 }

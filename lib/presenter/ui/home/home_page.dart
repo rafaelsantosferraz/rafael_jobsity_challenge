@@ -31,13 +31,15 @@ class HomePage extends StatelessWidget {
     } else {
       _tvShowList.value = state.tvShows;
     }
-    _selectCategory.value = state.selectCategory;
+    _selectedGenres.value   = state.selectedGenres ?? [];
+    _selectCategory.value = state.isSearching ? search : state.selectCategory;
     _isSearching.value    = state.isSearching;
-    _color.value          = state.isSearching ? kCategoryColors[search]! : kCategoryColors[_selectCategory.value]!;
+    _color.value          = kCategoryColors[_selectCategory.value]!;
   }
 
   final ValueNotifier<String> _selectCategory = ValueNotifier(categories[0]);
-  final ValueNotifier<Color>  _color = ValueNotifier(kCategoryColors[categories[0]]!);
+  final ValueNotifier<List<String>> _selectedGenres = ValueNotifier([]);
+  final ValueNotifier<Color> _color = ValueNotifier(kCategoryColors[categories[0]]!);
   final ValueNotifier<List<TvShow>?> _tvShowList = ValueNotifier(null);
   final ValueNotifier<bool> _isSearching = ValueNotifier(false);
 
@@ -62,11 +64,12 @@ class HomePage extends StatelessWidget {
             child: Column(
               children: <Widget>[
                 kVerticalGap,
-                ValueListenableBuilder<bool>(
-                    valueListenable: _isSearching,
-                    builder: (context, _isSearching, _) {
+                ValueListenableBuilder<String>(
+                    valueListenable: _selectCategory,
+                    builder: (context, _selectCategory, _) {
                     return CategoryList(
-                      categories: _isSearching ? [search] : categories,
+                      categories: _selectCategory == search ? [search] : categories,
+                      initialSelectedCategory: _selectCategory,
                       onCategoryChange: _onCategoryChange,
                     );
                   }
@@ -76,6 +79,7 @@ class HomePage extends StatelessWidget {
                   builder: (context, _selectCategory, _) {
                     return Genres(
                       genres: genres,
+                      selectGenres: _selectedGenres,
                       onGenreTap: _onGenreTap,
                       color: _color
                     );
@@ -85,9 +89,21 @@ class HomePage extends StatelessWidget {
                 ValueListenableBuilder<List<TvShow>?>(
                     valueListenable: _tvShowList,
                     builder: (context, _tvShows, _) {
-                    if(_tvShows == null) return CircularProgressIndicator();
-                    if(_tvShows.isEmpty) return Center(child: Text('No result'));
-                    return TvShowsList(tvShows: _tvShows, color: _color);
+                    if(_tvShows == null) {
+                      return const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    if(_tvShows.isEmpty) {
+                      return const Text('No result');
+                    }
+                    return ValueListenableBuilder<List<String>>(
+                      valueListenable: _selectedGenres,
+                      builder: (context, _selectGenres, _) {
+                        return TvShowsList(tvShows: _tvShows, color: _color, selectedGenres: _selectGenres);
+                      }
+                    );
                   }
                 ),
               ],

@@ -58,10 +58,12 @@ class HomeController {
   }
 
   _onStart(_StartEvent event) {
+    if(currentState.tvShows == null) {
+      _tvShowsLibrary.addEvent(TvShowsLibraryEvent.start());
+    }
     _tvShowsLibrary.tvShows.listen((tvShows) {
       _update(currentState.copyWith(tvShows: tvShows));
     });
-    _tvShowsLibrary.addEvent(TvShowsLibraryEvent.start());
     print('Start');
   }
 
@@ -79,8 +81,16 @@ class HomeController {
   }
 
   _onGenreTapEvent(_GenreTapEvent event) {
-    _selectedGenres[genres.indexOf(event.genre)] = !_selectedGenres[genres.indexOf(event.genre)];
-    print('Genre tap: ${event.genre}(${_selectedGenres[genres.indexOf(event.genre)]})');
+    var selectedGenres = currentState.selectedGenres ?? [];
+    if(selectedGenres.contains(event.genre)){
+      selectedGenres.remove(event.genre);
+      _update(currentState.copyWith(selectedGenres: selectedGenres));
+      print('Genre tap: ${event.genre}(false)');
+    } else {
+      selectedGenres.add(event.genre);
+      _update(currentState.copyWith(selectedGenres: selectedGenres));
+      print('Genre tap: ${event.genre}(true)');
+    }
   }
 
   _onSearchTextEvent(_SearchTextEvent event) {
@@ -89,12 +99,13 @@ class HomeController {
   }
 
   _onSearchToggleEvent(_SearchToggleEvent event) {
-    _update(currentState.copyWith(isSearching: event.isOpen));
     if(event.isOpen) {
+      _update(currentState.copyWith(isSearching: true));
       _tvShowsLibrary.search.listen((tvSearch) {
         _update(currentState.copyWith(tvSearch: tvSearch));
       });
     } else {
+      _update(currentState.copyWith(isSearching: false, selectCategory: previousState?.selectCategory ?? tvShow));
       _tvShowsLibrary.search.listen((tvShows) {});
     }
     print('Appbar search: ${event.isOpen}');

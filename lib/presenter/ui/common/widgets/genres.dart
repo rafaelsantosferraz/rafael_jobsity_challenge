@@ -11,11 +11,13 @@ class Genres extends StatelessWidget {
   final List<String> genres;
   final Function(String genre) onGenreTap;
   final ValueNotifier<Color> color;
+  final ValueNotifier<List<String>>? selectGenres;
   final bool isSelectable;
 
   const Genres({Key? key, required this.genres,
     required this.onGenreTap,
     required this.color,
+    this.selectGenres,
     this.isSelectable = true,
   }) :
 
@@ -33,7 +35,7 @@ class Genres extends StatelessWidget {
         itemBuilder: (context, index) =>
           Padding(
             padding: EdgeInsets.only(right: index == genres.length - 1 ? kDefaultPadding : 0),
-            child: GenreCard(genre: genres[index], onTap: (genre) => onGenreTap(genre), selectedColor: color, isSelectable: isSelectable,),
+            child: GenreCard(initialIsSelect: selectGenres?.value.contains(genres[index]),genre: genres[index], onTap: (genre) => onGenreTap(genre), selectedColor: color, isSelectable: isSelectable,),
           ),
       ),
     );
@@ -42,18 +44,21 @@ class Genres extends StatelessWidget {
 
 class GenreCard extends StatelessWidget {
   final String genre;
+  final bool? initialIsSelect;
   final Function(String) onTap;
   final ValueNotifier<Color> selectedColor;
   final bool isSelectable;
+  final ValueNotifier<bool> isSelect;
 
   GenreCard({Key? key,
     required this.genre,
     required this.onTap,
     required this.selectedColor,
+    this.initialIsSelect = false,
     this.isSelectable = true
-  }) : super(key: key);
-
-  final ValueNotifier<bool> isSelect = ValueNotifier(false);
+  }) :
+      isSelect = ValueNotifier(initialIsSelect ?? false),
+      super(key: key);
 
   @override
   Widget build(BuildContext context) {

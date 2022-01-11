@@ -1,9 +1,7 @@
 import 'dart:async';
-
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_shows_library.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/strings.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'tv_show_state.dart';
 
@@ -34,7 +32,6 @@ class TvShowController {
   }
 
   close(){
-    _tvShowsLibrary.close();
     _stateStreamController.close();
   }
   //endregion

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/actor.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/episode.dart';
@@ -14,6 +13,12 @@ import 'package:rafael_jobsity_challenge/presenter/ui/tv_show/widgets/episode_ti
 import 'widgets/backdrop_rating.dart';
 import 'widgets/header.dart';
 
+class TvShowPageArguments {
+  final TvShow tvShow;
+  final ValueNotifier<Color> color;
+
+  TvShowPageArguments(this.tvShow, this.color);
+}
 class TvShowPage extends StatelessWidget {
 
   final TvShow tvShow;
@@ -42,12 +47,8 @@ class TvShowPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return WillPopScope(
-      onWillPop: () async {
-        _tvShowController.close();
-        return true;
-      },
-      child: SingleChildScrollView(
+    return Scaffold(
+      body: SingleChildScrollView(
         physics: const ScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,9 +56,9 @@ class TvShowPage extends StatelessWidget {
             BackdropAndRating(size: size, tvShow: tvShow),
             const SizedBox(height: kDefaultPadding / 2),
             Header(
-              tvShow: tvShow,
-              isFavorite: _isFavorite,
-              favoriteClick: _favoriteClick
+                tvShow: tvShow,
+                isFavorite: _isFavorite,
+                favoriteClick: _favoriteClick
             ),
             if(tvShow.genres.isNotEmpty)...[
               Genres(
@@ -66,6 +67,7 @@ class TvShowPage extends StatelessWidget {
                 color: color,
                 isSelectable: false,
               ),
+              kVerticalGap,
             ],
             Padding(
               padding: const EdgeInsets.symmetric(
@@ -125,37 +127,37 @@ class TvShowPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
               child: ValueListenableBuilder<List<Episode>?>(
-                valueListenable: _episodes,
-                builder: (context, _episodes, _) {
-                  if(_episodes == null) {
-                    return const Padding(
-                      padding:  EdgeInsets.all(8.0),
-                      child: CircularProgressIndicator(),
+                  valueListenable: _episodes,
+                  builder: (context, _episodes, _) {
+                    if(_episodes == null) {
+                      return const Padding(
+                        padding:  EdgeInsets.all(8.0),
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    var season = 0;
+                    return ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: _episodes.length,
+                        itemBuilder: (context, index){
+                          var episode = _episodes[index];
+                          if(season != episode.season){
+                            season = episode.season;
+                            return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if(index != 0) kVerticalGap,
+                                  Text('Season ${episode.season}', style: Theme.of(context).textTheme.headline6,),
+                                  kVerticalGap,
+                                  EpisodeTile(episode: episode)
+                                ]
+                            );
+                          }
+                          return EpisodeTile(episode: episode);
+                        }
                     );
                   }
-                  var season = 0;
-                  return ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: _episodes.length,
-                      itemBuilder: (context, index){
-                        var episode = _episodes[index];
-                        if(season != episode.season){
-                          season = episode.season;
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if(index != 0) kVerticalGap,
-                              Text('Season ${episode.season}', style: Theme.of(context).textTheme.headline6,),
-                              kVerticalGap,
-                              EpisodeTile(episode: episode)
-                            ]
-                          );
-                        }
-                        return EpisodeTile(episode: episode);
-                      }
-                  );
-                }
               ),
             ),
             kVerticalGap,

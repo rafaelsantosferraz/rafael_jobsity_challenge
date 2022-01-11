@@ -7,10 +7,11 @@ class CategoryList extends StatelessWidget {
 
   final Function(String category) onCategoryChange;
   final List<String> categories;
+  final String initialSelectedCategory;
   final List<ValueNotifier<bool>> selectedCategories;
 
-  CategoryList({Key? key, required this.onCategoryChange, required this.categories}):
-    selectedCategories = List.generate(categories.length, (index) => ValueNotifier(index == 0)),
+  CategoryList({Key? key, required this.onCategoryChange, required this.categories, required this.initialSelectedCategory}):
+    selectedCategories = List.generate(categories.length, (index) => ValueNotifier(categories[index] == initialSelectedCategory)),
     super(key: key);
 
 
