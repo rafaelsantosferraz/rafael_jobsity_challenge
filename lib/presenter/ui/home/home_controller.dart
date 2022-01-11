@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_shows_library.dart';
+import 'package:rafael_jobsity_challenge/presenter/injection/injector.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/strings.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'home_state.dart';
 
@@ -67,9 +69,15 @@ class HomeController {
   }
 
   _onCategorySelectEvent(_CategorySelectEvent event) {
-    for (var genre in _selectedGenres) {
-      genre = false;
+    _update(currentState.copyWith(selectCategory: event.category));
+    if(event.category == favorites) {
+      _tvShowsLibrary.favorites.listen((favorites) {
+        _update(currentState.copyWith(favorites: favorites));
+      });
+    } else {
+      _tvShowsLibrary.favorites.listen((favorites) {});
     }
+    _tvShowsLibrary.addEvent(TvShowsLibraryEvent.getFavorites());
     print('Category select: ${event.category}');
   }
 
@@ -79,7 +87,7 @@ class HomeController {
   }
 
   _onSearchTextEvent(_SearchTextEvent event) {
-    _tvShowsLibrary.addEvent(TvShowsLibraryEvent.searchTvShows(event.text));
+    _tvShowsLibrary.addEvent(TvShowsLibraryEvent.search(event.text));
     print('Search: ${event.text}');
   }
 

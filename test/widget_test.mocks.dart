@@ -2,16 +2,22 @@
 // in rafael_jobsity_challenge/test/widget_test.dart.
 // Do not manually edit this file.
 
-import 'dart:async' as _i5;
+import 'dart:async' as _i7;
 
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:rafael_jobsity_challenge/data/datasources/local/favorite_tv_shows_local_datasource.dart'
+    as _i10;
 import 'package:rafael_jobsity_challenge/data/datasources/remote/tv_shows_remote_datasource.dart'
-    as _i6;
+    as _i9;
 import 'package:rafael_jobsity_challenge/data/repositories/tv_shows_repository.dart'
-    as _i3;
+    as _i5;
+import 'package:rafael_jobsity_challenge/domain/entities/episode.dart' as _i8;
 import 'package:rafael_jobsity_challenge/domain/entities/pagination.dart'
     as _i2;
-import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart' as _i4;
+import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart' as _i6;
+import 'package:rafael_jobsity_challenge/presenter/services/tv_maze_service.dart'
+    as _i3;
+import 'package:shared_preferences/shared_preferences.dart' as _i4;
 
 // ignore_for_file: avoid_redundant_argument_values
 // ignore_for_file: avoid_setters_without_getters
@@ -24,24 +30,29 @@ import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart' as _i4;
 
 class _FakePagination_0<T> extends _i1.Fake implements _i2.Pagination<T> {}
 
+class _FakeTvMazeService_1 extends _i1.Fake implements _i3.TvMazeService {}
+
+class _FakeSharedPreferences_2 extends _i1.Fake
+    implements _i4.SharedPreferences {}
+
 /// A class which mocks [TvShowsRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockTvShowsRepository extends _i1.Mock implements _i3.TvShowsRepository {
+class MockTvShowsRepository extends _i1.Mock implements _i5.TvShowsRepository {
   MockTvShowsRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i2.Pagination<_i4.TvShow> get tvShowsPagination =>
+  _i2.Pagination<_i6.TvShow> get tvShowsPagination =>
       (super.noSuchMethod(Invocation.getter(#tvShowsPagination),
-              returnValue: _FakePagination_0<_i4.TvShow>())
-          as _i2.Pagination<_i4.TvShow>);
+              returnValue: _FakePagination_0<_i6.TvShow>())
+          as _i2.Pagination<_i6.TvShow>);
   @override
-  _i2.Pagination<_i4.TvShow> get searchPagination =>
+  _i2.Pagination<_i6.TvShow> get searchPagination =>
       (super.noSuchMethod(Invocation.getter(#searchPagination),
-              returnValue: _FakePagination_0<_i4.TvShow>())
-          as _i2.Pagination<_i4.TvShow>);
+              returnValue: _FakePagination_0<_i6.TvShow>())
+          as _i2.Pagination<_i6.TvShow>);
   @override
   String get searchInput =>
       (super.noSuchMethod(Invocation.getter(#searchInput), returnValue: '')
@@ -51,45 +62,98 @@ class MockTvShowsRepository extends _i1.Mock implements _i3.TvShowsRepository {
       super.noSuchMethod(Invocation.setter(#searchInput, _searchInput),
           returnValueForMissingStub: null);
   @override
-  _i5.Future<List<_i4.TvShow>> getTvShows() =>
+  _i7.Future<List<_i6.TvShow>> getTvShows() =>
       (super.noSuchMethod(Invocation.method(#getTvShows, []),
-              returnValue: Future<List<_i4.TvShow>>.value(<_i4.TvShow>[]))
-          as _i5.Future<List<_i4.TvShow>>);
+              returnValue: Future<List<_i6.TvShow>>.value(<_i6.TvShow>[]))
+          as _i7.Future<List<_i6.TvShow>>);
   @override
-  _i5.Future<List<_i4.TvShow>> getMoreTvShows() =>
+  _i7.Future<List<_i6.TvShow>> getMoreTvShows() =>
       (super.noSuchMethod(Invocation.method(#getMoreTvShows, []),
-              returnValue: Future<List<_i4.TvShow>>.value(<_i4.TvShow>[]))
-          as _i5.Future<List<_i4.TvShow>>);
+              returnValue: Future<List<_i6.TvShow>>.value(<_i6.TvShow>[]))
+          as _i7.Future<List<_i6.TvShow>>);
   @override
-  _i5.Future<List<_i4.TvShow>> searchTvShows(String? name) =>
+  _i7.Future<List<_i6.TvShow>> searchTvShows(String? name) =>
       (super.noSuchMethod(Invocation.method(#searchTvShows, [name]),
-              returnValue: Future<List<_i4.TvShow>>.value(<_i4.TvShow>[]))
-          as _i5.Future<List<_i4.TvShow>>);
+              returnValue: Future<List<_i6.TvShow>>.value(<_i6.TvShow>[]))
+          as _i7.Future<List<_i6.TvShow>>);
   @override
-  _i5.Future<List<_i4.TvShow>> searchMoreTvShows() =>
+  _i7.Future<List<_i6.TvShow>> searchMoreTvShows() =>
       (super.noSuchMethod(Invocation.method(#searchMoreTvShows, []),
-              returnValue: Future<List<_i4.TvShow>>.value(<_i4.TvShow>[]))
-          as _i5.Future<List<_i4.TvShow>>);
+              returnValue: Future<List<_i6.TvShow>>.value(<_i6.TvShow>[]))
+          as _i7.Future<List<_i6.TvShow>>);
+  @override
+  _i7.Future<List<_i8.Episode>> getEpisodes(int? tvShowId) =>
+      (super.noSuchMethod(Invocation.method(#getEpisodes, [tvShowId]),
+              returnValue: Future<List<_i8.Episode>>.value(<_i8.Episode>[]))
+          as _i7.Future<List<_i8.Episode>>);
+  @override
+  List<_i6.TvShow> getFavorite() =>
+      (super.noSuchMethod(Invocation.method(#getFavorite, []),
+          returnValue: <_i6.TvShow>[]) as List<_i6.TvShow>);
+  @override
+  _i7.Future<bool> addFavorite(_i6.TvShow? tvShow) =>
+      (super.noSuchMethod(Invocation.method(#addFavorite, [tvShow]),
+          returnValue: Future<bool>.value(false)) as _i7.Future<bool>);
+  @override
+  _i7.Future<bool> removeFavorite(_i6.TvShow? tvShow) =>
+      (super.noSuchMethod(Invocation.method(#removeFavorite, [tvShow]),
+          returnValue: Future<bool>.value(false)) as _i7.Future<bool>);
 }
 
 /// A class which mocks [TvShowsRemoteDataSource].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockTvShowsRemoteDataSource extends _i1.Mock
-    implements _i6.TvShowsRemoteDataSource {
+    implements _i9.TvShowsRemoteDataSource {
   MockTvShowsRemoteDataSource() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i5.Future<List<_i4.TvShow>> getTvShows([int? page = 0]) =>
-      (super.noSuchMethod(Invocation.method(#getTvShows, [page]),
-              returnValue: Future<List<_i4.TvShow>>.value(<_i4.TvShow>[]))
-          as _i5.Future<List<_i4.TvShow>>);
+  _i3.TvMazeService get tvShowsService =>
+      (super.noSuchMethod(Invocation.getter(#tvShowsService),
+          returnValue: _FakeTvMazeService_1()) as _i3.TvMazeService);
   @override
-  _i5.Future<List<_i4.TvShow>> searchTvShows({String? name, int? page = 0}) =>
+  _i7.Future<List<_i6.TvShow>> getTvShows([int? page = 0]) =>
+      (super.noSuchMethod(Invocation.method(#getTvShows, [page]),
+              returnValue: Future<List<_i6.TvShow>>.value(<_i6.TvShow>[]))
+          as _i7.Future<List<_i6.TvShow>>);
+  @override
+  _i7.Future<List<_i6.TvShow>> searchTvShows({String? name, int? page = 0}) =>
       (super.noSuchMethod(
               Invocation.method(#searchTvShows, [], {#name: name, #page: page}),
-              returnValue: Future<List<_i4.TvShow>>.value(<_i4.TvShow>[]))
-          as _i5.Future<List<_i4.TvShow>>);
+              returnValue: Future<List<_i6.TvShow>>.value(<_i6.TvShow>[]))
+          as _i7.Future<List<_i6.TvShow>>);
+  @override
+  _i7.Future<List<_i8.Episode>> getEpisodes(int? tvShowId) =>
+      (super.noSuchMethod(Invocation.method(#getEpisodes, [tvShowId]),
+              returnValue: Future<List<_i8.Episode>>.value(<_i8.Episode>[]))
+          as _i7.Future<List<_i8.Episode>>);
+}
+
+/// A class which mocks [FavoriteTvShowsLocalDataSource].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockFavoriteTvShowsLocalDataSource extends _i1.Mock
+    implements _i10.FavoriteTvShowsLocalDataSource {
+  MockFavoriteTvShowsLocalDataSource() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i4.SharedPreferences get sharedPreferences =>
+      (super.noSuchMethod(Invocation.getter(#sharedPreferences),
+          returnValue: _FakeSharedPreferences_2()) as _i4.SharedPreferences);
+  @override
+  List<_i6.TvShow> getFavorite() =>
+      (super.noSuchMethod(Invocation.method(#getFavorite, []),
+          returnValue: <_i6.TvShow>[]) as List<_i6.TvShow>);
+  @override
+  _i7.Future<bool> addFavorite(_i6.TvShow? tvShow) =>
+      (super.noSuchMethod(Invocation.method(#addFavorite, [tvShow]),
+          returnValue: Future<bool>.value(false)) as _i7.Future<bool>);
+  @override
+  _i7.Future<bool> removeFavorite(_i6.TvShow? tvShow) =>
+      (super.noSuchMethod(Invocation.method(#removeFavorite, [tvShow]),
+          returnValue: Future<bool>.value(false)) as _i7.Future<bool>);
 }

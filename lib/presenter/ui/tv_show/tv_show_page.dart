@@ -2,12 +2,15 @@
 import 'package:flutter/material.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/episode.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
+import 'package:rafael_jobsity_challenge/presenter/injection/injector.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/colors.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/strings.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/values.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/widgets/genres.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/tv_show/tv_show_controller.dart';
+import 'package:rafael_jobsity_challenge/presenter/ui/tv_show/tv_show_state.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/tv_show/widgets/episode.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'widgets/backdrop_rating.dart';
 import 'widgets/header.dart';
@@ -20,17 +23,20 @@ class TvShowPage extends StatelessWidget {
 
   TvShowPage({Key? key,
     required this.tvShow,
-    required this.color
+    required this.color,
   }):
     _tvShowController = TvShowController(tvShow),
     super(key: key){
-      _tvShowController.state.listen((state){
-        _episodes.value = state.episodes;
-      });
+      _tvShowController.state.listen(onStateChange);
     }
 
-  final ValueNotifier<String> _selectCategory = ValueNotifier(categories[0]);
   final ValueNotifier<List<Episode>?> _episodes = ValueNotifier([]);
+  final ValueNotifier<bool?> _isFavorite = ValueNotifier(null);
+
+  onStateChange(TvShowState state){
+    _episodes.value = state.episodes;
+    _isFavorite.value = state.isFavorite;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,14 +53,20 @@ class TvShowPage extends StatelessWidget {
           children: <Widget>[
             BackdropAndRating(size: size, tvShow: tvShow),
             const SizedBox(height: kDefaultPadding / 2),
-            Header(tvShow: tvShow),
-            Genres(
-              genres: tvShow.genres,
-              onGenreTap: (genre){},
-              color: color,
-              isSelectable: false,
+            Header(
+              tvShow: tvShow,
+              isFavorite: _isFavorite,
+              favoriteClick: _favoriteClick
             ),
-            kVerticalGap,
+            if(tvShow.genres.isNotEmpty)...[
+              Genres(
+                genres: tvShow.genres,
+                onGenreTap: (genre){},
+                color: color,
+                isSelectable: false,
+              ),
+              kVerticalGap,
+            ],
             Padding(
               padding: const EdgeInsets.symmetric(
                 vertical: kDefaultPadding / 2,
@@ -128,8 +140,10 @@ class TvShowPage extends StatelessWidget {
   }
 
   //region Private -------------------------------------------------------------
-  void _onFavorite(){
-    _tvShowController.addEvent(TvShowEvent.favorite(tvShow, true)); //todo: finish
+  void _favoriteClick(bool isFavorite){
+    isFavorite
+      ? _tvShowController.addEvent(TvShowEvent.addFavorite(tvShow))
+      : _tvShowController.addEvent(TvShowEvent.removeFavorite(tvShow));
   }
   //endregion
 }

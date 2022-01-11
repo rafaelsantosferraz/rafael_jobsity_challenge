@@ -5,12 +5,18 @@ import 'package:rafael_jobsity_challenge/presenter/ui/common/colors.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/values.dart';
 
 class Header extends StatelessWidget {
+
+  final Function(bool) favoriteClick;
+
   const Header({
     Key? key,
     required this.tvShow,
+    required this.isFavorite,
+    required this.favoriteClick,
   }) : super(key: key);
 
   final TvShow tvShow;
+  final ValueNotifier<bool?> isFavorite;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +47,7 @@ class Header extends StatelessWidget {
               ],
             ),
           ),
-          FavoriteIcon(startState: false)
+          FavoriteIcon(isFavorite: isFavorite, favoriteClick: favoriteClick),
         ],
       ),
     );
@@ -50,11 +56,10 @@ class Header extends StatelessWidget {
 
 class FavoriteIcon extends StatelessWidget {
 
-  final bool startState;
-  final ValueNotifier<bool> _isSelect;
+  final ValueNotifier<bool?> isFavorite;
+  final Function(bool) favoriteClick;
 
-  FavoriteIcon({Key? key, this.startState = false}) :
-    _isSelect = ValueNotifier(startState),
+  const FavoriteIcon({Key? key, required this.isFavorite, required this.favoriteClick}) :
     super(key: key);
 
 
@@ -63,14 +68,21 @@ class FavoriteIcon extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(kDefaultPadding/4),
       child: IconButton(
-        onPressed: () => _isSelect.value = !_isSelect.value,
-        icon: ValueListenableBuilder<bool>(
-          valueListenable: _isSelect,
-          builder: (context, _isSelect, _) {
+        onPressed: () {
+          if(isFavorite.value != null){
+            isFavorite.value = !isFavorite.value!;
+            favoriteClick(isFavorite.value!);
+          }
+        },
+        icon: ValueListenableBuilder<bool?>(
+          valueListenable: isFavorite,
+          builder: (context, isSelect, _) {
             return Icon(
               Icons.favorite,
               size: 32,
-              color: _isSelect ? Colors.red : Colors.grey,
+              color: isSelect == null ?
+                Colors.transparent
+                : isSelect ? Colors.red : Colors.grey,
             );
           }
         ),

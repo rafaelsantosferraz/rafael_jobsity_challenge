@@ -42,7 +42,7 @@ class TvShow{
           : [],
       summary: json['summary'] ?? '',
       episodes: json['episodes'] != null
-          ? (json['episodes'] as List<Map<String, dynamic>>)
+          ? (json['episodes'] as List<dynamic>)
             .map<Episode>((episodeJson) => Episode.fromJson(episodeJson))
             .toList()
           : [],
@@ -53,6 +53,26 @@ class TvShow{
         : null,
       weight: json['weight']
     );
+  }
+
+  Map<String, dynamic> toJson(){
+    return {
+      'id': id,
+      'name': name,
+      'image': {
+        'original': posterUrl
+      },
+      'airstamp': airs?.toIso8601String(),
+      'premiered': premiered?.toIso8601String(),
+      'ended': ended?.toIso8601String(),
+      'genres': genres,
+      'summary': summary,
+      'episodes': episodes,
+      'rating': {
+        'average': rating
+      },
+      'weight': weight
+    };
   }
 
   @override

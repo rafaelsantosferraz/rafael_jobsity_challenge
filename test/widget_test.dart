@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:rafael_jobsity_challenge/data/datasources/local/favorite_tv_shows_local_datasource.dart';
 import 'package:rafael_jobsity_challenge/data/datasources/remote/tv_shows_remote_datasource.dart';
 import 'package:rafael_jobsity_challenge/data/repositories/tv_shows_repository.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/episode.dart';
@@ -10,7 +11,7 @@ import 'package:rafael_jobsity_challenge/domain/entities/tv_shows_library.dart';
 import 'widget_test.mocks.dart';
 
 
-@GenerateMocks([TvShowsRepository, TvShowsRemoteDataSource])
+@GenerateMocks([TvShowsRepository, TvShowsRemoteDataSource, FavoriteTvShowsLocalDataSource])
 void main() {
 
   TvShow FakeEmptyTvShow(String name){
@@ -30,6 +31,7 @@ void main() {
 
     final mockTvShowsRepository = MockTvShowsRepository();
     final mockTvShowsRemoteDataSource = MockTvShowsRemoteDataSource();
+    final mockFavoriteTvShowsLocalDataSource = MockFavoriteTvShowsLocalDataSource();
 
     test('WHEN tvShows library start, tvShows library SHOULD fetch from tvShows repository and stream result ', () async {
       // Given/Arrange
@@ -53,7 +55,7 @@ void main() {
 
     test('WHEN get more series, tvShows library SHOULD fetch from tvShows repository next page until no more series and stream result', () async {
       // Given/Arrange
-      final tvShowsRepository = TvShowsRepository(mockTvShowsRemoteDataSource);
+      final tvShowsRepository = TvShowsRepository(mockTvShowsRemoteDataSource, mockFavoriteTvShowsLocalDataSource);
       var tvShowsLibrary = TvShowsLibrary.instanceWith(tvShowsRepository);
       final seriesByPage = <int, List<TvShow>>{
         0:[
@@ -79,9 +81,9 @@ void main() {
 
       // When/Act
       tvShowsLibrary.addEvent(TvShowsLibraryEvent.start());
-      tvShowsLibrary.addEvent(TvShowsLibraryEvent.getMoreTvShows());
-      tvShowsLibrary.addEvent(TvShowsLibraryEvent.getMoreTvShows());
-      tvShowsLibrary.addEvent(TvShowsLibraryEvent.getMoreTvShows());
+      tvShowsLibrary.addEvent(TvShowsLibraryEvent.getMore());
+      tvShowsLibrary.addEvent(TvShowsLibraryEvent.getMore());
+      tvShowsLibrary.addEvent(TvShowsLibraryEvent.getMore());
 
       // Then/Assert
       expectLater(tvShowsLibrary.tvShows, emitsInOrder([
@@ -106,10 +108,11 @@ void main() {
 
   group('Allow users to search series by name.',(){
     final mockTvShowsRemoteDataSource = MockTvShowsRemoteDataSource();
+    final mockFavoriteTvShowsLocalDataSource = MockFavoriteTvShowsLocalDataSource();
 
     test('WHEN user input search parameter, SHOULD fetch from tvShows repository series with that input parameter and stream result ', () async {
       // Given/Arrange
-      final tvShowsRepository = TvShowsRepository(mockTvShowsRemoteDataSource);
+      final tvShowsRepository = TvShowsRepository(mockTvShowsRemoteDataSource, mockFavoriteTvShowsLocalDataSource);
       final tvShowsLibrary = TvShowsLibrary.instanceWith(tvShowsRepository);
       const searchInput = 'love';
       final mockDbTvShowsSearchResult = [
@@ -122,7 +125,7 @@ void main() {
       when(mockTvShowsRemoteDataSource.searchTvShows(name: searchInput)).thenAnswer((_) async => mockDbTvShowsSearchResult);
 
       // When/Act
-      tvShowsLibrary.addEvent(TvShowsLibraryEvent.searchTvShows(searchInput));
+      tvShowsLibrary.addEvent(TvShowsLibraryEvent.search(searchInput));
 
       // Then/Assert
       expectLater(tvShowsLibrary.search, emits(mockDbTvShowsSearchResult));
@@ -130,7 +133,7 @@ void main() {
 
     test('WHEN user input search parameter, SHOULD search from tvShows repository series with that input parameter and stream result ', () async {
       // Given/Arrange
-      final tvShowsRepository = TvShowsRepository(mockTvShowsRemoteDataSource);
+      final tvShowsRepository = TvShowsRepository(mockTvShowsRemoteDataSource, mockFavoriteTvShowsLocalDataSource);
       final tvShowsLibrary = TvShowsLibrary.instanceWith(tvShowsRepository);
       const searchInput = 'love';
       final mockDbTvShowsSearchResult = [
@@ -143,7 +146,7 @@ void main() {
       when(mockTvShowsRemoteDataSource.searchTvShows(name: searchInput)).thenAnswer((_) async => mockDbTvShowsSearchResult);
 
       // When/Act
-      tvShowsLibrary.addEvent(TvShowsLibraryEvent.searchTvShows(searchInput));
+      tvShowsLibrary.addEvent(TvShowsLibraryEvent.search(searchInput));
 
       // Then/Assert
       expectLater(tvShowsLibrary.search, emits(mockDbTvShowsSearchResult));
@@ -151,7 +154,7 @@ void main() {
 
     test('WHEN search more, tvShows library SHOULD search from tvShows repository next page until no more series and stream result', () async {
       // Given/Arrange
-      final tvShowsRepository = TvShowsRepository(mockTvShowsRemoteDataSource);
+      final tvShowsRepository = TvShowsRepository(mockTvShowsRemoteDataSource, mockFavoriteTvShowsLocalDataSource);
       final tvShowsLibrary = TvShowsLibrary.instanceWith(tvShowsRepository);
       const searchInput = 'love';
       final searchResultPages = <int, List<TvShow>>{
@@ -177,10 +180,10 @@ void main() {
       when(mockTvShowsRemoteDataSource.searchTvShows(name: searchInput, page: 3)).thenAnswer((_) async => []);
 
       // When/Act
-      tvShowsLibrary.addEvent(TvShowsLibraryEvent.searchTvShows(searchInput));
-      tvShowsLibrary.addEvent(TvShowsLibraryEvent.searchMoreTvShows());
-      tvShowsLibrary.addEvent(TvShowsLibraryEvent.searchMoreTvShows());
-      tvShowsLibrary.addEvent(TvShowsLibraryEvent.searchMoreTvShows());
+      tvShowsLibrary.addEvent(TvShowsLibraryEvent.search(searchInput));
+      tvShowsLibrary.addEvent(TvShowsLibraryEvent.searchMore());
+      tvShowsLibrary.addEvent(TvShowsLibraryEvent.searchMore());
+      tvShowsLibrary.addEvent(TvShowsLibraryEvent.searchMore());
 
       // Then/Assert
       expectLater(tvShowsLibrary.search, emitsInOrder([

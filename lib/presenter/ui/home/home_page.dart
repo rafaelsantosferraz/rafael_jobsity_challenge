@@ -11,6 +11,7 @@ import 'package:rafael_jobsity_challenge/presenter/ui/home/widgets/appbar.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/home/widgets/categories.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/widgets/genres.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/home/widgets/tv_shows.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatelessWidget {
 
@@ -26,14 +27,14 @@ class HomePage extends StatelessWidget {
   void onStateChange(HomeState state){
     if(state.isSearching){
       _tvShowList.value = state.tvSearch;
+    } else if (state.selectCategory == favorites) {
+      _tvShowList.value = state.favorites;
     } else {
       _tvShowList.value = state.tvShows;
     }
-    _isSearching.value = state.isSearching;
-    _color.value       = state.isSearching && !(_homeController.previousState?.isSearching ?? false) ? kCategoryColors[search]! : kCategoryColors[tvShow]!;
-    if(!state.isSearching && (_homeController.previousState?.isSearching ?? true)){
-      _selectCategory.value = tvShow;
-    }
+    _selectCategory.value = state.selectCategory;
+    _isSearching.value    = state.isSearching;
+    _color.value          = state.isSearching ? kCategoryColors[search]! : kCategoryColors[_selectCategory.value]!;
   }
 
   final ValueNotifier<String> _selectCategory = ValueNotifier(categories[0]);

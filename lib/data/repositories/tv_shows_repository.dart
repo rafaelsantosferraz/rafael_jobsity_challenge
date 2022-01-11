@@ -1,14 +1,17 @@
+import 'package:rafael_jobsity_challenge/data/datasources/local/favorite_tv_shows_local_datasource.dart';
 import 'package:rafael_jobsity_challenge/data/datasources/remote/tv_shows_remote_datasource.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/episode.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/pagination.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
+import 'package:rafael_jobsity_challenge/domain/repositories_interfaces/favorite_tv_shows_repository_interface.dart';
 import 'package:rafael_jobsity_challenge/domain/repositories_interfaces/tv_shows_repository_interface.dart';
 
-class TvShowsRepository implements TvShowsRepositoryInterface {
+class TvShowsRepository implements TvShowsRepositoryInterface, FavoriteTvShowsRepositoryInterface{
 
   final TvShowsRemoteDataSource _tvShowsRemoteDataSource;
+  final FavoriteTvShowsLocalDataSource _favoriteTvShowsLocalDataSource;
 
-  TvShowsRepository(this._tvShowsRemoteDataSource);
+  TvShowsRepository(this._tvShowsRemoteDataSource, this._favoriteTvShowsLocalDataSource);
 
   final tvShowsPagination = Pagination<TvShow>();
   final searchPagination = Pagination<TvShow>();
@@ -54,5 +57,25 @@ class TvShowsRepository implements TvShowsRepositoryInterface {
   Future<List<Episode>> getEpisodes(int tvShowId) async{
     var episodes = await _tvShowsRemoteDataSource.getEpisodes(tvShowId);
     return episodes;
+  }
+
+  @override
+  List<TvShow> getFavorite(){
+    return _favoriteTvShowsLocalDataSource.getFavorite();
+  }
+
+  @override
+  Future<bool> addFavorite(TvShow tvShow) async {
+    return _favoriteTvShowsLocalDataSource.addFavorite(tvShow);
+  }
+
+  @override
+  Future<bool> removeFavorite(TvShow tvShow){
+    return _favoriteTvShowsLocalDataSource.removeFavorite(tvShow);
+  }
+
+  @override
+  bool checkIsFavorite(TvShow tvShow){
+    return _favoriteTvShowsLocalDataSource.checkIsFavorite(tvShow);
   }
 }

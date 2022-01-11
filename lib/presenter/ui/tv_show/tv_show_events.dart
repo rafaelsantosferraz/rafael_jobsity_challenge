@@ -6,15 +6,20 @@ class TvShowEvent {
   TvShowEvent._();
 
   factory TvShowEvent.start() = _StartEvent;
-  factory TvShowEvent.favorite(TvShow tvShow, bool isFavorite) = _FavoriteEvent;
+  factory TvShowEvent.addFavorite(TvShow tvShow) = _AddFavoriteEvent;
+  factory TvShowEvent.removeFavorite(TvShow tvShow) = _RemoveFavoriteEvent;
 }
 
 class _StartEvent extends TvShowEvent {
   _StartEvent():super._();
 }
 
-class _FavoriteEvent extends TvShowEvent {
+class _AddFavoriteEvent extends TvShowEvent {
   final TvShow tvShow;
-  final bool isFavorite;
-  _FavoriteEvent(this.tvShow, this.isFavorite):super._();
+  _AddFavoriteEvent(this.tvShow):super._();
+}
+
+class _RemoveFavoriteEvent extends TvShowEvent {
+  final TvShow tvShow;
+  _RemoveFavoriteEvent(this.tvShow):super._();
 }

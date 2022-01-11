@@ -41,6 +41,8 @@ dependencies:
   flutter_secure_storage: ^5.0.2
   # https://pub.dev/packages/local_auth
   local_auth: ^1.1.9
+  # https://pub.dev/packages/local_auth
+  shared_preferences: ^2.0.6
 
 dev_dependencies:
   flutter_test:

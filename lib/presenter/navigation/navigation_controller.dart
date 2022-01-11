@@ -11,6 +11,7 @@ class NavigationController{
 
   static final navigatorKey = GlobalKey<NavigatorState>();
 
+
   static Route<dynamic> generateRoute(RouteSettings settings){
     switch(settings.name){
       case NavigationRoutes.home:    return MaterialPageRoute(builder: (_) => HomePage());

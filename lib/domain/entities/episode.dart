@@ -32,4 +32,19 @@ class Episode {
         summary: json['summary'] ?? ''
     );
   }
+
+  Map<String, dynamic> toJson(){
+    return {
+      'id': id,
+      'name': name,
+      'image':{
+        'medium': thumb,
+        'original': poster
+      },
+      'number': number,
+      'season': season,
+      'airstamp': airs?.toIso8601String(),
+      'summary': summary
+    };
+  }
 }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_shows_library.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/strings.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'tv_show_state.dart';
 
@@ -44,13 +45,17 @@ class TvShowController {
     switch(event.runtimeType){
       case _StartEvent: await _onStart(event as _StartEvent);
       break;
-      case _FavoriteEvent: await _onFavoriteEvent(event as _FavoriteEvent);
+      case _AddFavoriteEvent: await _onAddFavorite(event as _AddFavoriteEvent);
+      break;
+      case _RemoveFavoriteEvent: await _onRemoveFavorite(event as _RemoveFavoriteEvent);
       break;
       default: throw Exception('Event ${event.runtimeType} not process');
     }
   }
 
   _onStart(_StartEvent event) async {
+    var isFavorite = _tvShowsLibrary.checkIsFavorite(_currentState.tvShow);
+    _update(_currentState.copyWith(isFavorite: isFavorite));
     if(_currentState.episodes == null) {
       var episodes = await _tvShowsLibrary.getEpisodes(_currentState.tvShow.id);
       _update(_currentState.copyWith(episodes: episodes));
@@ -58,11 +63,14 @@ class TvShowController {
     print('Start TvShowController');
   }
 
-  _onFavoriteEvent(_FavoriteEvent event) {
-    for (var genre in _selectedGenres) {
-      genre = false;
-    }
-    print('Favorite: ${event.tvShow.name}(${event.isFavorite})');
+  _onAddFavorite(_AddFavoriteEvent event) {
+    _tvShowsLibrary.addEvent(TvShowsLibraryEvent.addFavorite(event.tvShow));
+    print('Click add to favorite: ${event.tvShow.name}');
+  }
+
+  _onRemoveFavorite(_RemoveFavoriteEvent event) {
+    _tvShowsLibrary.addEvent(TvShowsLibraryEvent.removeFavorite(event.tvShow));
+    print('Click remove favorite: ${event.tvShow.name}');
   }
 
   _update(TvShowState state) {

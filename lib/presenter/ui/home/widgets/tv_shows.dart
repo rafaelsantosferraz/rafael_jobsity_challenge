@@ -8,6 +8,7 @@ import 'package:rafael_jobsity_challenge/presenter/ui/common/values.dart';
 import 'dart:math' as math;
 
 import 'package:rafael_jobsity_challenge/presenter/ui/tv_show/tv_show_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class TvShowsList extends StatefulWidget {
@@ -156,7 +157,7 @@ class _TvShowCard extends StatelessWidget {
             ],
           );
         },
-        openBuilder: (context, action)   => TvShowPage(tvShow: tvShow, color: color,),
+        openBuilder: (context, action)   => TvShowPage(tvShow: tvShow, color: color),
       ),
     );
   }

@@ -1,38 +1,43 @@
 import 'dart:async';
 
+import 'package:rafael_jobsity_challenge/data/datasources/local/favorite_tv_shows_local_datasource.dart';
 import 'package:rafael_jobsity_challenge/data/datasources/remote/tv_shows_remote_datasource.dart';
 import 'package:rafael_jobsity_challenge/data/repositories/tv_shows_repository.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
+import 'package:rafael_jobsity_challenge/domain/repositories_interfaces/favorite_tv_shows_repository_interface.dart';
 import 'package:rafael_jobsity_challenge/domain/repositories_interfaces/tv_shows_repository_interface.dart';
+import 'package:rafael_jobsity_challenge/presenter/injection/injector.dart';
 import 'package:rafael_jobsity_challenge/presenter/services/tv_maze_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class TvShowsLibrary{
 
   final TvShowsRepositoryInterface _tvShowsRepository;
-  TvShowsLibrary._(this._tvShowsRepository);
+  final FavoriteTvShowsRepositoryInterface _favoriteTvShowsRepository;
+  TvShowsLibrary._(this._tvShowsRepository, this._favoriteTvShowsRepository);
+
 
   static TvShowsLibrary? _instance;
-  static TvShowsLibrary get instance => TvShowsLibrary._getInstance();
+  static TvShowsLibrary get instance => _instance ?? TvShowsLibrary._getInstance();
 
-  factory TvShowsLibrary._getInstance() {
-    return _instance ??= TvShowsLibrary._(TvShowsRepository(TvShowsRemoteDataSource(TvMazeService.instance)));
+  factory TvShowsLibrary._getInstance()  {
+    var tvShowsRepository = TvShowsRepository(TvShowsRemoteDataSource(TvMazeService.instance), FavoriteTvShowsLocalDataSource(Injector.sharedPreferences));
+    return _instance ??= TvShowsLibrary._(tvShowsRepository, tvShowsRepository);
   }
 
   factory TvShowsLibrary.instanceWith(TvShowsRepository tvShowsRepository) {
-    return TvShowsLibrary._(tvShowsRepository);
+    return TvShowsLibrary._(tvShowsRepository, tvShowsRepository);
   }
 
   final StreamController<List<TvShow>> _tvShowsStream = StreamController.broadcast();
   final StreamController<List<TvShow>> _searchStream  = StreamController.broadcast();
+  final StreamController<List<TvShow>> _favoriteStream  = StreamController.broadcast();
 
 
-  int counter = 0;
-  Stream<List<TvShow>> get tvShows {
-    print('stream ${counter++}');
-    return _tvShowsStream.stream;
-  }
+  Stream<List<TvShow>> get tvShows => _tvShowsStream.stream;
   Stream<List<TvShow>> get search => _searchStream.stream;
+  Stream<List<TvShow>> get favorites => _favoriteStream.stream;
 
   final _eventsQueue = <TvShowsLibraryEvent>[];
   final _eventsHistory = <TvShowsLibraryEvent>[];
@@ -59,6 +64,10 @@ class TvShowsLibrary{
     return _tvShowsRepository.getEpisodes(tvShowId);
   }
 
+  bool checkIsFavorite(TvShow tvShow){
+    return _favoriteTvShowsRepository.checkIsFavorite(tvShow);
+  }
+
   close(){
     _tvShowsStream.close();
   }
@@ -79,75 +88,127 @@ class TvShowsLibrary{
 
   Future _onEvent(TvShowsLibraryEvent event) async {
     switch(event.runtimeType){
-      case _TvShowsLibraryStartEvent: await _onStart(event as _TvShowsLibraryStartEvent);
+      case _StartEvent: await _onStart(event as _StartEvent);
       break;
-      case _TvShowsLibraryGetMoreTvShowsEvent: await _onGetMoreTvShows(event as _TvShowsLibraryGetMoreTvShowsEvent);
+      case _GetMoreEvent: await _onGetMore(event as _GetMoreEvent);
       break;
-      case _TvShowsLibrarySearchTvShowsEvent: await _onSearchTvShows(event as _TvShowsLibrarySearchTvShowsEvent);
+      case _SearchEvent: await _onSearch(event as _SearchEvent);
       break;
-      case _TvShowsLibrarySearchMoreTvShowsEvent: await _onSearchMoreTvShows(event as _TvShowsLibrarySearchMoreTvShowsEvent);
+      case _SearchMoreEvent: await _onSearchMore(event as _SearchMoreEvent);
       break;
+      case _GetFavoritesEvent: await _onGetFavorites(event as _GetFavoritesEvent);
+      break;
+      case _AddFavoriteEvent: await _onAddFavorite(event as _AddFavoriteEvent);
+      break;
+      case _RemoveFavoriteEvent: await _onRemoveFavorite(event as _RemoveFavoriteEvent);
+      break;
+
       default: throw Exception('Event ${event.runtimeType} not process');
     }
   }
 
-  Future _onStart(_TvShowsLibraryStartEvent event) async {
+  Future _onStart(_StartEvent event) async {
     var tvShows = await _tvShowsRepository.getTvShows();
     _tvShowsStream.sink.add(tvShows);
   }
 
-  Future _onGetMoreTvShows(_TvShowsLibraryGetMoreTvShowsEvent event) async {
+  Future _onGetMore(_GetMoreEvent event) async {
     var tvShows = await _tvShowsRepository.getMoreTvShows();
     _tvShowsStream.sink.add(tvShows);
   }
 
-  Future _onSearchTvShows(_TvShowsLibrarySearchTvShowsEvent event) async {
+  Future _onSearch(_SearchEvent event) async {
     var search = await _tvShowsRepository.searchTvShows(event.name);
     _searchStream.sink.add(search);
   }
 
-  Future _onSearchMoreTvShows(_TvShowsLibrarySearchMoreTvShowsEvent event) async {
+  Future _onSearchMore(_SearchMoreEvent event) async {
     var search = await _tvShowsRepository.searchMoreTvShows();
     _searchStream.sink.add(search);
   }
-//endRegion
+
+  Future _onGetFavorites(_GetFavoritesEvent event) async {
+    var favorite = await _favoriteTvShowsRepository.getFavorite();
+    _favoriteStream.sink.add(favorite);
+  }
+
+  Future _onAddFavorite(_AddFavoriteEvent event) async {
+    var isAdd = await _favoriteTvShowsRepository.addFavorite(event.tvShow);
+    if(isAdd){
+      _favoriteStream.sink.add(_favoriteTvShowsRepository.getFavorite());
+    }
+  }
+
+  Future _onRemoveFavorite(_RemoveFavoriteEvent event) async {
+    var isRemove = await _favoriteTvShowsRepository.removeFavorite(event.tvShow);
+    if(isRemove){
+      _favoriteStream.sink.add(_favoriteTvShowsRepository.getFavorite());
+    }
+  }
+  //endRegion
 }
 
 class TvShowsLibraryEvent{
 
   const TvShowsLibraryEvent._();
 
-  factory TvShowsLibraryEvent.start() = _TvShowsLibraryStartEvent;
-  factory TvShowsLibraryEvent.getMoreTvShows() = _TvShowsLibraryGetMoreTvShowsEvent;
-  factory TvShowsLibraryEvent.searchTvShows(String name) = _TvShowsLibrarySearchTvShowsEvent;
-  factory TvShowsLibraryEvent.searchMoreTvShows() = _TvShowsLibrarySearchMoreTvShowsEvent;
+  factory TvShowsLibraryEvent.start() = _StartEvent;
+  factory TvShowsLibraryEvent.getMore() = _GetMoreEvent;
+  factory TvShowsLibraryEvent.search(String name) = _SearchEvent;
+  factory TvShowsLibraryEvent.searchMore() = _SearchMoreEvent;
+  factory TvShowsLibraryEvent.getFavorites() = _GetFavoritesEvent;
+  factory TvShowsLibraryEvent.addFavorite(TvShow tvShow) = _AddFavoriteEvent;
+  factory TvShowsLibraryEvent.removeFavorite(TvShow tvShow) = _RemoveFavoriteEvent;
 }
 
-class _TvShowsLibraryStartEvent extends TvShowsLibraryEvent {
-  const _TvShowsLibraryStartEvent() : super._();
+class _StartEvent extends TvShowsLibraryEvent {
+  const _StartEvent() : super._();
 
   @override
   String toString() => 'TvShowsLibraryEvent: start';
 }
 
-class _TvShowsLibraryGetMoreTvShowsEvent extends TvShowsLibraryEvent {
-  const _TvShowsLibraryGetMoreTvShowsEvent() : super._();
+class _GetMoreEvent extends TvShowsLibraryEvent {
+  const _GetMoreEvent() : super._();
 
   @override
   String toString() => 'TvShowsLibraryEvent: get more series';
 }
 
-class _TvShowsLibrarySearchTvShowsEvent extends TvShowsLibraryEvent {
+class _SearchEvent extends TvShowsLibraryEvent {
   final String name;
-  const _TvShowsLibrarySearchTvShowsEvent(this.name) : super._();
+  const _SearchEvent(this.name) : super._();
 
   @override
   String toString() => 'TvShowsLibraryEvent: search series named $name';
 }
 
-class _TvShowsLibrarySearchMoreTvShowsEvent extends TvShowsLibraryEvent {
-  const _TvShowsLibrarySearchMoreTvShowsEvent() : super._();
+class _SearchMoreEvent extends TvShowsLibraryEvent {
+  const _SearchMoreEvent() : super._();
 
   @override
   String toString() => 'TvShowsLibraryEvent: search more series with same name';
+}
+
+class _GetFavoritesEvent extends TvShowsLibraryEvent {
+  const _GetFavoritesEvent() : super._();
+
+  @override
+  String toString() => 'TvShowsLibraryEvent: get favorites';
+}
+
+class _AddFavoriteEvent extends TvShowsLibraryEvent {
+  final TvShow tvShow;
+  const _AddFavoriteEvent(this.tvShow) : super._();
+
+  @override
+  String toString() => 'TvShowsLibraryEvent: add ${tvShow.name} to favorites';
+}
+
+class _RemoveFavoriteEvent extends TvShowsLibraryEvent {
+  final TvShow tvShow;
+  const _RemoveFavoriteEvent(this.tvShow) : super._();
+
+  @override
+  String toString() => 'TvShowsLibraryEvent: remove ${tvShow.name} to favorites';
 }
