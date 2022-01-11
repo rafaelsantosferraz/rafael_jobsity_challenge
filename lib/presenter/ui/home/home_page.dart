@@ -11,7 +11,6 @@ import 'package:rafael_jobsity_challenge/presenter/ui/home/widgets/appbar.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/home/widgets/categories.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/widgets/genres.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/home/widgets/tv_shows.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatelessWidget {
 
@@ -39,7 +38,7 @@ class HomePage extends StatelessWidget {
 
   final ValueNotifier<String> _selectCategory = ValueNotifier(categories[0]);
   final ValueNotifier<Color>  _color = ValueNotifier(kCategoryColors[categories[0]]!);
-  final ValueNotifier<List<TvShow>> _tvShowList = ValueNotifier([]);
+  final ValueNotifier<List<TvShow>?> _tvShowList = ValueNotifier(null);
   final ValueNotifier<bool> _isSearching = ValueNotifier(false);
 
   @override
@@ -83,9 +82,11 @@ class HomePage extends StatelessWidget {
                   }
                 ),
                 kVerticalGap,
-                ValueListenableBuilder<List<TvShow>>(
+                ValueListenableBuilder<List<TvShow>?>(
                     valueListenable: _tvShowList,
                     builder: (context, _tvShows, _) {
+                    if(_tvShows == null) return CircularProgressIndicator();
+                    if(_tvShows.isEmpty) return Center(child: Text('No result'));
                     return TvShowsList(tvShows: _tvShows, color: _color);
                   }
                 ),

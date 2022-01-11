@@ -3,11 +3,10 @@ import 'dart:async';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_shows_library.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/strings.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import 'tv_show_state.dart';
+import 'actors_state.dart';
 
-part 'tv_show_events.dart';
+part 'actors_events.dart';
 
 class TvShowController {
 
@@ -20,7 +19,7 @@ class TvShowController {
     super(){
     _currentState = TvShowState.initial(tvShow);
     _update(_currentState);
-    addEvent(TvShowEvent.start());
+    addEvent(ActorsEvent.start());
   }
 
   final StreamController<TvShowState> _stateStreamController = StreamController();
@@ -29,7 +28,7 @@ class TvShowController {
 
 
   //region Public --------------------------------------------------------------
-  addEvent(TvShowEvent event){
+  addEvent(ActorsEvent event){
     _onEvent(event);
   }
 
@@ -41,7 +40,7 @@ class TvShowController {
 
 
   //region Private -------------------------------------------------------------
-  Future _onEvent(TvShowEvent event) async {
+  Future _onEvent(ActorsEvent event) async {
     switch(event.runtimeType){
       case _StartEvent: await _onStart(event as _StartEvent);
       break;
@@ -56,8 +55,6 @@ class TvShowController {
   _onStart(_StartEvent event) async {
     var isFavorite = _tvShowsLibrary.checkIsFavorite(_currentState.tvShow);
     _update(_currentState.copyWith(isFavorite: isFavorite));
-    var actors = await _tvShowsLibrary.getActors(_currentState.tvShow.id);
-    _update(_currentState.copyWith(actors: actors));
     if(_currentState.episodes == null) {
       var episodes = await _tvShowsLibrary.getEpisodes(_currentState.tvShow.id);
       _update(_currentState.copyWith(episodes: episodes));

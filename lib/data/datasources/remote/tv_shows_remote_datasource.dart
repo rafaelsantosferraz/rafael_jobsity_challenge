@@ -1,3 +1,4 @@
+import 'package:rafael_jobsity_challenge/domain/entities/actor.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/episode.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
 import 'package:rafael_jobsity_challenge/presenter/services/tv_maze_service.dart';
@@ -18,5 +19,9 @@ class TvShowsRemoteDataSource{
 
   Future<List<Episode>> getEpisodes(int tvShowId) async{
     return tvShowsService.getEpisodes(id: tvShowId);
+  }
+
+  Future<List<Actor>> getActors(int tvShowId) async {
+    return tvShowsService.getActors(tvShowId: tvShowId);
   }
 }

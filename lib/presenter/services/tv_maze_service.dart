@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:rafael_jobsity_challenge/domain/entities/actor.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/episode.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
 
@@ -80,5 +81,20 @@ class TvMazeService {
       print(s);
     }
     return tvShows;
+  }
+
+  Future<List<Actor>> getActors({required int tvShowId}) async {
+    var actors = <Actor>[];
+    try {
+      var result = await _dio.get('shows/$tvShowId/cast');
+      var json = result.data as List<dynamic>;
+      for (var element in json) {
+        actors.add(Actor.fromJson(element['person']));
+      }
+    } catch(e, s){
+      print(e);
+      print(s);
+    }
+    return actors;
   }
 }

@@ -1,6 +1,5 @@
 
 import 'package:flutter/material.dart';
-import 'package:rafael_jobsity_challenge/domain/entities/actor.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/episode.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/colors.dart';
@@ -8,7 +7,6 @@ import 'package:rafael_jobsity_challenge/presenter/ui/common/values.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/widgets/genres.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/tv_show/tv_show_controller.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/tv_show/tv_show_state.dart';
-import 'package:rafael_jobsity_challenge/presenter/ui/tv_show/widgets/actors.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/tv_show/widgets/episode_tile.dart';
 
 import 'widgets/backdrop_rating.dart';
@@ -30,13 +28,11 @@ class TvShowPage extends StatelessWidget {
     }
 
   final ValueNotifier<List<Episode>?> _episodes = ValueNotifier([]);
-  final ValueNotifier<List<Actor>?> _actors = ValueNotifier([]);
   final ValueNotifier<bool?> _isFavorite = ValueNotifier(null);
 
   onStateChange(TvShowState state){
     _episodes.value = state.episodes;
     _isFavorite.value = state.isFavorite;
-    _actors.value = state.actors;
   }
 
   @override
@@ -66,6 +62,7 @@ class TvShowPage extends StatelessWidget {
                 color: color,
                 isSelectable: false,
               ),
+              kVerticalGap,
             ],
             Padding(
               padding: const EdgeInsets.symmetric(
@@ -88,33 +85,9 @@ class TvShowPage extends StatelessWidget {
             ),
             //CastAndCrew(casts: tvShow.cast),
             kVerticalGap,
-            ValueListenableBuilder<List<Actor>?>(
-                valueListenable: _actors,
-                builder: (context, _actors, _) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: kDefaultPadding / 2,
-                          horizontal: kDefaultPadding,
-                        ),
-                        child: Text(
-                          "Cast",
-                          style: Theme.of(context).textTheme.headline5,
-                        ),
-                      ),
-                      Actors(
-                        actors: _actors ?? [],
-                        onActorTap: (actor){},
-                      ),
-                      kVerticalGap,
-                    ],
-                  );
-                }
-            ),
             Padding(
               padding: const EdgeInsets.symmetric(
+                vertical: kDefaultPadding/2,
                 horizontal: kDefaultPadding,
               ),
               child: Text(
@@ -128,10 +101,7 @@ class TvShowPage extends StatelessWidget {
                 valueListenable: _episodes,
                 builder: (context, _episodes, _) {
                   if(_episodes == null) {
-                    return const Padding(
-                      padding:  EdgeInsets.all(8.0),
-                      child: CircularProgressIndicator(),
-                    );
+                    return const CircularProgressIndicator();
                   }
                   var season = 0;
                   return ListView.builder(
@@ -145,7 +115,7 @@ class TvShowPage extends StatelessWidget {
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              if(index != 0) kVerticalGap,
+                              kVerticalGap,
                               Text('Season ${episode.season}', style: Theme.of(context).textTheme.headline6,),
                               kVerticalGap,
                               EpisodeTile(episode: episode)

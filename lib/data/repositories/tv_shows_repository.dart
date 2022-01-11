@@ -1,5 +1,6 @@
 import 'package:rafael_jobsity_challenge/data/datasources/local/favorite_tv_shows_local_datasource.dart';
 import 'package:rafael_jobsity_challenge/data/datasources/remote/tv_shows_remote_datasource.dart';
+import 'package:rafael_jobsity_challenge/domain/entities/actor.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/episode.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/pagination.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
@@ -77,5 +78,10 @@ class TvShowsRepository implements TvShowsRepositoryInterface, FavoriteTvShowsRe
   @override
   bool checkIsFavorite(TvShow tvShow){
     return _favoriteTvShowsLocalDataSource.checkIsFavorite(tvShow);
+  }
+
+  @override
+  Future<List<Actor>> getActors(int tvShowId) async {
+    return _tvShowsRemoteDataSource.getActors(tvShowId);
   }
 }

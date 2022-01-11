@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:rafael_jobsity_challenge/data/datasources/local/favorite_tv_shows_local_datasource.dart';
 import 'package:rafael_jobsity_challenge/data/datasources/remote/tv_shows_remote_datasource.dart';
 import 'package:rafael_jobsity_challenge/data/repositories/tv_shows_repository.dart';
+import 'package:rafael_jobsity_challenge/domain/entities/actor.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
 import 'package:rafael_jobsity_challenge/domain/repositories_interfaces/favorite_tv_shows_repository_interface.dart';
 import 'package:rafael_jobsity_challenge/domain/repositories_interfaces/tv_shows_repository_interface.dart';
@@ -66,6 +67,10 @@ class TvShowsLibrary{
 
   bool checkIsFavorite(TvShow tvShow){
     return _favoriteTvShowsRepository.checkIsFavorite(tvShow);
+  }
+
+  Future<List<Actor>> getActors(int tvShowId) async {
+    return _tvShowsRepository.getActors(tvShowId);
   }
 
   close(){
