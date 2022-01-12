@@ -22,7 +22,7 @@ class BackdropAndRating extends StatelessWidget {
       child: Stack(
         children: <Widget>[
           Hero(
-            tag: 'hero',
+            tag: 'hero_${tvShow.id}',
             child: Container(
               height: size.height * 0.5 - 50,
               decoration: BoxDecoration(

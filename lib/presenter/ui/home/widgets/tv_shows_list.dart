@@ -158,7 +158,7 @@ class _TvShowCard extends StatelessWidget {
                       ),
                     ),
                     Hero(
-                      tag: 'hero',
+                      tag: 'hero_${tvShow.id}',
                       child: Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(50),
