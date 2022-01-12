@@ -75,7 +75,7 @@ class _TvShowsListState extends State<TvShowsList> {
                 return AnimatedBuilder(
                   animation: _pageController,
                   builder: (context, child) {
-                    if(index == filteredTvShows.length - 2){
+                    if(index == filteredTvShows.length - 2 || filteredTvShows.length == 1){
                       widget.onListEnd();
                     }
                     return AnimatedOpacity(
