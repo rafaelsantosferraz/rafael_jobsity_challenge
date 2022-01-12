@@ -10,7 +10,8 @@ import 'package:rafael_jobsity_challenge/presenter/ui/home/home_state.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/home/widgets/appbar.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/home/widgets/categories.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/widgets/genres.dart';
-import 'package:rafael_jobsity_challenge/presenter/ui/home/widgets/tv_shows.dart';
+
+import 'widgets/tv_shows_list.dart';
 
 class HomePage extends StatelessWidget {
 
@@ -32,6 +33,9 @@ class HomePage extends StatelessWidget {
       _tvShowList.value = state.tvShows;
     }
     _selectedGenres.value   = state.selectedGenres ?? [];
+    if(_isSearching.value != state.isSearching || state.selectCategory != _homeController.previousState?.selectCategory){
+      _pageIndex.value = 0;
+    }
     _selectCategory.value = state.isSearching ? search : state.selectCategory;
     _isSearching.value    = state.isSearching;
     _color.value          = kCategoryColors[_selectCategory.value]!;
@@ -42,6 +46,8 @@ class HomePage extends StatelessWidget {
   final ValueNotifier<Color> _color = ValueNotifier(kCategoryColors[categories[0]]!);
   final ValueNotifier<List<TvShow>?> _tvShowList = ValueNotifier(null);
   final ValueNotifier<bool> _isSearching = ValueNotifier(false);
+  final ValueNotifier<bool> _isEnd = ValueNotifier(false);
+  final ValueNotifier<int> _pageIndex = ValueNotifier(0);
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +107,14 @@ class HomePage extends StatelessWidget {
                     return ValueListenableBuilder<List<String>>(
                       valueListenable: _selectedGenres,
                       builder: (context, _selectGenres, _) {
-                        return TvShowsList(tvShows: _tvShows, color: _color, selectedGenres: _selectGenres);
+                        return TvShowsList(
+                          pageIndex: _pageIndex,
+                          tvShows: _tvShows,
+                          color: _color,
+                          selectedGenres: _selectGenres,
+                          isEnd: _isEnd,
+                          onListEnd: () => _onListEnd(),
+                        );
                       }
                     );
                   }
@@ -131,5 +144,8 @@ class HomePage extends StatelessWidget {
 
   void _onSearchToggle(bool isOpen) =>
       _homeController.addEvent(HomeEvent.searchToggle(isOpen));
+
+  void _onListEnd() =>
+      _homeController.addEvent(HomeEvent.listEnd());
   //endregion
 }

@@ -7,6 +7,7 @@ class HomeState{
   final List<TvShow>? favorites;
   final List<String>? selectedGenres;
   final bool isSearching;
+  final bool isEnd;
   final String selectCategory;
 
   HomeState({
@@ -15,6 +16,7 @@ class HomeState{
     required this.favorites,
     required this.selectedGenres,
     required this.isSearching,
+    required this.isEnd,
     required this.selectCategory
   });
 
@@ -25,6 +27,7 @@ class HomeState{
       favorites: null,
       selectedGenres: [],
       isSearching: false,
+      isEnd: false,
       selectCategory: categories[0]
     );
   }
@@ -35,6 +38,7 @@ class HomeState{
     List<TvShow>? favorites,
     List<String>? selectedGenres,
     bool? isSearching,
+    bool? isEnd,
     String? selectCategory
   }){
     return HomeState(
@@ -43,6 +47,7 @@ class HomeState{
       favorites: favorites ?? (this.favorites != null ? List.from(this.favorites!) : null),
       selectedGenres: selectedGenres ?? (this.selectedGenres != null ? List.from(this.selectedGenres!) : null),
       isSearching: isSearching ?? this.isSearching,
+      isEnd: isEnd ?? this.isEnd,
       selectCategory: selectCategory ?? this.selectCategory
     );
   }

@@ -53,6 +53,8 @@ class HomeController {
       break;
       case _SearchToggleEvent: await _onSearchToggleEvent(event as _SearchToggleEvent);
       break;
+      case _ListEndEvent: await _onListEndEvent(event as _ListEndEvent);
+      break;
       default: throw Exception('Event ${event.runtimeType} not process');
     }
   }
@@ -109,6 +111,12 @@ class HomeController {
       _tvShowsLibrary.search.listen((tvShows) {});
     }
     print('Appbar search: ${event.isOpen}');
+  }
+
+  _onListEndEvent(_ListEndEvent event){
+    if(currentState.selectCategory != favorites){
+
+    }
   }
 
   _update(HomeState state) {

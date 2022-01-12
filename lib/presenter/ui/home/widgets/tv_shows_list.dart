@@ -11,8 +11,18 @@ class TvShowsList extends StatefulWidget {
   final List<TvShow> tvShows;
   final ValueNotifier<Color> color;
   final List<String> selectedGenres;
+  final VoidCallback onListEnd;
+  final ValueNotifier<bool> isEnd;
+  final ValueNotifier<int> pageIndex;
 
-  const TvShowsList({Key? key,required this.tvShows, required this.color, required this.selectedGenres}) : super(key: key);
+  const TvShowsList({Key? key,
+    required this.tvShows,
+    required this.color,
+    required this.selectedGenres,
+    required this.onListEnd,
+    required this.isEnd,
+    required this.pageIndex
+  }) : super(key: key);
 
   @override
   _TvShowsListState createState() => _TvShowsListState();
@@ -20,22 +30,27 @@ class TvShowsList extends StatefulWidget {
 
 class _TvShowsListState extends State<TvShowsList> {
   late PageController _pageController;
-  int initialPage = 0;
+
+  get listener => (){
+    if(_pageController.page?.toInt() != widget.pageIndex.value && widget.pageIndex.value == 0){
+      _pageController.jumpToPage(0);
+    }
+  };
 
   @override
   void initState() {
     super.initState();
+    widget.pageIndex.addListener(listener);
     _pageController = PageController(
-      // so that we can have small portion shown on left and right side
       viewportFraction: 0.8,
-      // by default our movie poster
-      initialPage: initialPage,
+      initialPage: widget.pageIndex.value,
     );
   }
 
   @override
   void dispose() {
     super.dispose();
+    widget.pageIndex.removeListener(listener);
     _pageController.dispose();
   }
 
@@ -47,22 +62,28 @@ class _TvShowsListState extends State<TvShowsList> {
       child: AspectRatio(
         aspectRatio: 0.85,
         child: PageView.builder(
-          // onPageChanged: (value) {
-          //   setState(() {
-          //     initialPage = value;
-          //   });
-          // },
+          onPageChanged: (value) {
+            widget.pageIndex.value = value;
+          },
           controller: _pageController,
           physics: const ClampingScrollPhysics(),
           itemCount: filteredTvShows.length, // we have 3 demo movies
           itemBuilder: (context, index) =>
-            AnimatedBuilder(
-              animation: _pageController,
-              builder: (context, child) {
-                return AnimatedOpacity(
-                  duration: const Duration(milliseconds: kAnimationDuration),
-                  opacity: initialPage == index ? 1 : 0.8,
-                  child: _TvShowCard(tvShow: filteredTvShows[index], index: index, color: widget.color,),
+            ValueListenableBuilder<int>(
+              valueListenable: widget.pageIndex,
+              builder: (context, pageIndex, _) {
+                return AnimatedBuilder(
+                  animation: _pageController,
+                  builder: (context, child) {
+                    if(index == filteredTvShows.length - 2){
+                      widget.onListEnd();
+                    }
+                    return AnimatedOpacity(
+                      duration: const Duration(milliseconds: kAnimationDuration),
+                      opacity: pageIndex == index ? 1 : 0.6,
+                      child: _TvShowCard(tvShow: filteredTvShows[index], index: index, color: widget.color,),
+                    );
+                  }
                 );
               }
             ),
@@ -79,6 +100,23 @@ class _TvShowsListState extends State<TvShowsList> {
       bool isGenre = true;
       for (var genre in selectedGenres) {
         isGenre = tvShow.genres.contains(genre) && isGenre;
+      }
+      return isGenre;
+    }).toList();
+    return filteredTvShow;
+  }
+
+  List<TvShow> _filter2(List<TvShow> tvShows, List<String> selectedGenres){
+    if(selectedGenres.isEmpty){
+      return tvShows;
+    }
+    var filteredTvShow = tvShows.where((tvShow) {
+      bool isGenre = false;
+      for (var genre in tvShow.genres) {
+        if(selectedGenres.contains(genre)){
+          isGenre = true;
+          break;
+        }
       }
       return isGenre;
     }).toList();
