@@ -10,7 +10,7 @@ class TvShowsRemoteDataSource{
   TvShowsRemoteDataSource(this.tvShowsService);
 
   Future<List<TvShow>> getTvShows([int page = 0]) async{
-    return tvShowsService.getTvShows();
+    return tvShowsService.getTvShows(page: page);
   }
 
   Future<List<TvShow>> searchTvShows({required String name, int? page = 0}) async{

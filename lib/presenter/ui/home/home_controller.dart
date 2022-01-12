@@ -114,8 +114,8 @@ class HomeController {
   }
 
   _onListEndEvent(_ListEndEvent event){
-    if(currentState.selectCategory != favorites){
-
+    if(currentState.selectCategory == tvShow){
+      _tvShowsLibrary.addEvent(TvShowsLibraryEvent.getMore());
     }
   }
 
