@@ -23,7 +23,7 @@ class Actor {
         name: json['name'],
         thumb: json['image']?['medium'] ?? '',
         poster: json['image']?['original'] ?? '',
-        country: json['country']['name'],
+        country: json['country']?['name'] ?? '',
         birthday: json['birthday'] != null ? DateTime.parse(json['birthday']) : null,
     );
   }
