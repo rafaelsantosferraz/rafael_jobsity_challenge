@@ -63,26 +63,32 @@ class FavoriteIcon extends StatelessWidget {
     super(key: key);
 
 
+
   @override
   Widget build(BuildContext context) {
+    bool justPressed = false;
+
     return Container(
       padding: const EdgeInsets.all(kDefaultPadding/4),
       child: IconButton(
         onPressed: () {
-          if(isFavorite.value != null){
-            isFavorite.value = !isFavorite.value!;
-            favoriteClick(isFavorite.value!);
+          if(isFavorite.value != null && justPressed == false){
+            justPressed = true;
+            favoriteClick(!isFavorite.value!);
+            Future.delayed(const Duration(seconds: 2),(){
+              justPressed = false;
+            });
           }
         },
         icon: ValueListenableBuilder<bool?>(
           valueListenable: isFavorite,
-          builder: (context, isSelect, _) {
+          builder: (context, isFavorite, _) {
             return Icon(
               Icons.favorite,
               size: 32,
-              color: isSelect == null ?
+              color: isFavorite == null ?
                 Colors.transparent
-                : isSelect ? Colors.red : Colors.grey,
+                : isFavorite ? Colors.red : Colors.grey,
             );
           }
         ),

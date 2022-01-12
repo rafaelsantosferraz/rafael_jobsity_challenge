@@ -63,11 +63,13 @@ class TvShowController {
   }
 
   _onAddFavorite(_AddFavoriteEvent event) {
+    _update(_currentState.copyWith(isFavorite: true));
     _tvShowsLibrary.addEvent(TvShowsLibraryEvent.addFavorite(event.tvShow));
     print('Click add to favorite: ${event.tvShow.name}');
   }
 
   _onRemoveFavorite(_RemoveFavoriteEvent event) {
+    _update(_currentState.copyWith(isFavorite: false));
     _tvShowsLibrary.addEvent(TvShowsLibraryEvent.removeFavorite(event.tvShow));
     print('Click remove favorite: ${event.tvShow.name}');
   }
