@@ -1,8 +1,9 @@
+import 'package:rafael_jobsity_challenge/domain/entities/pagination.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/strings.dart';
 
 class HomeState{
-  final List<TvShow>? tvShows;
+  final PaginatedList<TvShow>? tvShows;
   final List<TvShow>? tvSearch;
   final List<TvShow>? favorites;
   final List<String>? selectedGenres;
@@ -33,7 +34,7 @@ class HomeState{
   }
 
   HomeState copyWith({
-    List<TvShow>? tvShows,
+    PaginatedList<TvShow>? tvShows,
     List<TvShow>? tvSearch,
     List<TvShow>? favorites,
     List<String>? selectedGenres,
@@ -42,7 +43,7 @@ class HomeState{
     String? selectCategory
   }){
     return HomeState(
-      tvShows: tvShows  ?? (this.tvShows != null ? List.from(this.tvShows!) : null),
+      tvShows: tvShows  ?? this.tvShows?.copy(),
       tvSearch: tvSearch ?? (this.tvSearch != null ? List.from(this.tvSearch!) : null),
       favorites: favorites ?? (this.favorites != null ? List.from(this.favorites!) : null),
       selectedGenres: selectedGenres ?? (this.selectedGenres != null ? List.from(this.selectedGenres!) : null),

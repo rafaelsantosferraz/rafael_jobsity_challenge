@@ -4,12 +4,12 @@ import 'package:rafael_jobsity_challenge/data/datasources/local/favorite_tv_show
 import 'package:rafael_jobsity_challenge/data/datasources/remote/tv_shows_remote_datasource.dart';
 import 'package:rafael_jobsity_challenge/data/repositories/tv_shows_repository.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/actor.dart';
+import 'package:rafael_jobsity_challenge/domain/entities/pagination.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
 import 'package:rafael_jobsity_challenge/domain/repositories_interfaces/favorite_tv_shows_repository_interface.dart';
 import 'package:rafael_jobsity_challenge/domain/repositories_interfaces/tv_shows_repository_interface.dart';
 import 'package:rafael_jobsity_challenge/presenter/injection/injector.dart';
 import 'package:rafael_jobsity_challenge/presenter/services/tv_maze_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 
 class TvShowsLibrary{
@@ -31,25 +31,31 @@ class TvShowsLibrary{
     return TvShowsLibrary._(tvShowsRepository, tvShowsRepository);
   }
 
-  final StreamController<List<TvShow>> _tvShowsStream = StreamController.broadcast();
+  final StreamController<PaginatedList<TvShow>> _tvShowsStream = StreamController.broadcast();
   final StreamController<List<TvShow>> _searchStream  = StreamController.broadcast();
   final StreamController<List<TvShow>> _favoriteStream  = StreamController.broadcast();
 
 
-  Stream<List<TvShow>> get tvShows => _tvShowsStream.stream;
+  Stream<PaginatedList<TvShow>> get tvShows => _tvShowsStream.stream;
   Stream<List<TvShow>> get search => _searchStream.stream;
   Stream<List<TvShow>> get favorites => _favoriteStream.stream;
 
-  final _eventsQueue = <TvShowsLibraryEvent>[];
+  final _getMoreventsQueue = <_GetMoreEvent>[];
   final _eventsHistory = <TvShowsLibraryEvent>[];
-
+  bool _gettingMore = false;
 
 
 
   //region Public --------------------------------------------------------------
   addEvent(TvShowsLibraryEvent event) async {
-    //_eventsQueue.add(event);
-    _onEvent(event);
+    if(event is _GetMoreEvent){
+      _getMoreventsQueue.add(event);
+      if(_getMoreventsQueue.length == 1){
+        _processNextGetMoreEvent();
+      }
+    } else {
+      _onEvent(event);
+    }
   }
 
   printEventHistory(){
@@ -84,12 +90,12 @@ class TvShowsLibrary{
   //region Private -------------------------------------------------------------
   ///Controls that every event get process in order of arrival to avoid any race
   ///conditions
-  Future _processNextEvent() async {
-    if(_eventsQueue.isNotEmpty){
-      await _onEvent(_eventsQueue.first);
-      _eventsHistory.add(_eventsQueue.first);
-      _eventsQueue.removeAt(0);
-      _processNextEvent();
+  Future _processNextGetMoreEvent() async {
+    if(_getMoreventsQueue.isNotEmpty){
+      await _onEvent(_getMoreventsQueue.first);
+      _eventsHistory.add(_getMoreventsQueue.first);
+      _getMoreventsQueue.removeAt(0);
+      _processNextGetMoreEvent();
     }
   }
 
@@ -122,6 +128,7 @@ class TvShowsLibrary{
   Future _onGetMore(_GetMoreEvent event) async {
     var tvShows = await _tvShowsRepository.getMoreTvShows();
     _tvShowsStream.sink.add(tvShows);
+    _gettingMore = false;
   }
 
   Future _onSearch(_SearchEvent event) async {

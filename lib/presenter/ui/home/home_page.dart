@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:rafael_jobsity_challenge/domain/entities/pagination.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
 import 'package:rafael_jobsity_challenge/presenter/navigation/navigation_controller.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/colors.dart';
@@ -26,9 +27,9 @@ class HomePage extends StatelessWidget {
 
   void onStateChange(HomeState state){
     if(state.isSearching){
-      _tvShowList.value = state.tvSearch;
+      _tvShowList.value = state.tvSearch != null ? PaginatedList<TvShow>(pages: [state.tvSearch!], isLastPage: true) : null;
     } else if (state.selectCategory == favorites) {
-      _tvShowList.value = state.favorites;
+      _tvShowList.value = state.favorites != null ? PaginatedList<TvShow>(pages: [state.favorites!], isLastPage: true) : null;
     } else {
       _tvShowList.value = state.tvShows;
     }
@@ -44,7 +45,7 @@ class HomePage extends StatelessWidget {
   final ValueNotifier<String> _selectCategory = ValueNotifier(categories[0]);
   final ValueNotifier<List<String>> _selectedGenres = ValueNotifier([]);
   final ValueNotifier<Color> _color = ValueNotifier(kCategoryColors[categories[0]]!);
-  final ValueNotifier<List<TvShow>?> _tvShowList = ValueNotifier(null);
+  final ValueNotifier<PaginatedList<TvShow>?> _tvShowList = ValueNotifier(null);
   final ValueNotifier<bool> _isSearching = ValueNotifier(false);
   final ValueNotifier<bool> _isEnd = ValueNotifier(false);
   final ValueNotifier<int> _pageIndex = ValueNotifier(0);
@@ -92,7 +93,7 @@ class HomePage extends StatelessWidget {
                   }
                 ),
                 kVerticalGap,
-                ValueListenableBuilder<List<TvShow>?>(
+                ValueListenableBuilder<PaginatedList<TvShow>?>(
                     valueListenable: _tvShowList,
                     builder: (context, _tvShows, _) {
                     if(_tvShows == null) {
@@ -101,7 +102,7 @@ class HomePage extends StatelessWidget {
                         child: CircularProgressIndicator(),
                       );
                     }
-                    if(_tvShows.isEmpty) {
+                    if(_tvShows.getAll().isEmpty) {
                       return const Text('No result');
                     }
                     return ValueListenableBuilder<List<String>>(

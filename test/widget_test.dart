@@ -5,6 +5,7 @@ import 'package:rafael_jobsity_challenge/data/datasources/local/favorite_tv_show
 import 'package:rafael_jobsity_challenge/data/datasources/remote/tv_shows_remote_datasource.dart';
 import 'package:rafael_jobsity_challenge/data/repositories/tv_shows_repository.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/episode.dart';
+import 'package:rafael_jobsity_challenge/domain/entities/pagination.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_shows_library.dart';
 
@@ -37,13 +38,14 @@ void main() {
       // Given/Arrange
 
       final tvShowsLibrary = TvShowsLibrary.instanceWith(mockTvShowsRepository);
-      final mockDbTvShows = [
+      final mockDbTvShows = PaginatedList<TvShow>(
+          pages: [[
         FakeEmptyTvShow('1'),
         FakeEmptyTvShow('2'),
         FakeEmptyTvShow('3'),
         FakeEmptyTvShow('4'),
         FakeEmptyTvShow('5'),
-      ];
+      ]]);
       when(mockTvShowsRepository.getTvShows()).thenAnswer((_) async => mockDbTvShows);
 
       // When/Act
@@ -87,21 +89,10 @@ void main() {
 
       // Then/Assert
       expectLater(tvShowsLibrary.tvShows, emitsInOrder([
-        seriesByPage[0],
-        List.of([
-          ...seriesByPage[0]!,
-          ...seriesByPage[1]!
-        ]),
-        List.of([
-          ...seriesByPage[0]!,
-          ...seriesByPage[1]!,
-          ...seriesByPage[2]!
-        ]),
-        List.of([
-          ...seriesByPage[0]!,
-          ...seriesByPage[1]!,
-          ...seriesByPage[2]!
-        ])
+        PaginatedList<TvShow>(pages: [seriesByPage[0]!]),
+        PaginatedList<TvShow>(pages: [seriesByPage[0]!, seriesByPage[1]!]),
+        PaginatedList<TvShow>(pages: [seriesByPage[0]!, seriesByPage[1]!, seriesByPage[2]!]),
+        PaginatedList<TvShow>(pages: [seriesByPage[0]!, seriesByPage[1]!, seriesByPage[2]!], isLastPage: true),
       ]));
     });
   });

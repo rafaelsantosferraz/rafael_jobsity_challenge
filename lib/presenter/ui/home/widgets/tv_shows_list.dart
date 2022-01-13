@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:rafael_jobsity_challenge/domain/entities/pagination.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
 import 'package:rafael_jobsity_challenge/presenter/navigation/navigation_controller.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/colors.dart';
@@ -9,7 +10,7 @@ import 'package:rafael_jobsity_challenge/presenter/ui/tv_show/tv_show_page.dart'
 
 class TvShowsList extends StatefulWidget {
 
-  final List<TvShow> tvShows;
+  final PaginatedList<TvShow> tvShows;
   final ValueNotifier<Color> color;
   final List<String> selectedGenres;
   final VoidCallback onListEnd;
@@ -57,7 +58,7 @@ class _TvShowsListState extends State<TvShowsList> {
 
   @override
   Widget build(BuildContext context) {
-    var filteredTvShows = _filter(widget.tvShows, widget.selectedGenres);
+    var filteredTvShows = _filter(widget.tvShows.getAll(), widget.selectedGenres);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: kDefaultPadding),
       child: AspectRatio(
@@ -68,15 +69,47 @@ class _TvShowsListState extends State<TvShowsList> {
           },
           controller: _pageController,
           physics: const ClampingScrollPhysics(),
-          itemCount: filteredTvShows.length, // we have 3 demo movies
+          itemCount: filteredTvShows.length + 1, // we have 3 demo movies
           itemBuilder: (context, index) =>
             ValueListenableBuilder<int>(
               valueListenable: widget.pageIndex,
               builder: (context, pageIndex, _) {
+                if(index == filteredTvShows.length){
+                  return Column(
+                    children: <Widget>[
+                      Expanded(
+                        child: AspectRatio(
+                          aspectRatio: 0.85,
+                          child: Stack(
+                            children: [
+                              if(widget.tvShows.isLastPage)...[
+                                Center(
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(kDefaultPadding),
+                                    child: Text('End'),
+                                  ),
+                                )
+                              ] else ...[
+                                Center(
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(kDefaultPadding),
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                )
+                              ]
+                            ],
+                          ),
+                        ),
+                      ),
+                      kVerticalGap,
+                      kVerticalGap,
+                    ],
+                  );
+                }
                 return AnimatedBuilder(
                   animation: _pageController,
                   builder: (context, child) {
-                    if(index == filteredTvShows.length - 2 || filteredTvShows.length == 1){
+                    if(index == filteredTvShows.length - 2 || filteredTvShows.length < 3 && !widget.tvShows.isLastPage){
                       widget.onListEnd();
                     }
                     return AnimatedOpacity(

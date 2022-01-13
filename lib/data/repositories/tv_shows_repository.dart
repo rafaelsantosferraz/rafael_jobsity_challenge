@@ -14,27 +14,27 @@ class TvShowsRepository implements TvShowsRepositoryInterface, FavoriteTvShowsRe
 
   TvShowsRepository(this._tvShowsRemoteDataSource, this._favoriteTvShowsLocalDataSource);
 
-  final tvShowsPagination = Pagination<TvShow>();
-  final searchPagination = Pagination<TvShow>();
+  final tvShowsPagination = PaginatedList<TvShow>();
+  final searchPagination = PaginatedList<TvShow>();
   String searchInput = '';
 
   ///Get first page of series
   @override
-  Future<List<TvShow>> getTvShows() async{
+  Future<PaginatedList<TvShow>> getTvShows() async{
     var series = await _tvShowsRemoteDataSource.getTvShows();
     tvShowsPagination.clear();
     tvShowsPagination.add(series);
-    return tvShowsPagination.getAll();
+    return tvShowsPagination.copy();
   }
 
   ///Get next page series. If there's no more pages, it return list without
   ///changes
   @override
-  Future<List<TvShow>> getMoreTvShows() async{
+  Future<PaginatedList<TvShow>> getMoreTvShows() async{
     assert(tvShowsPagination.isNotEmpty);
     var series = await _tvShowsRemoteDataSource.getTvShows(tvShowsPagination.length);
     tvShowsPagination.add(series);
-    return tvShowsPagination.getAll();
+    return tvShowsPagination.copy();
   }
 
   @override

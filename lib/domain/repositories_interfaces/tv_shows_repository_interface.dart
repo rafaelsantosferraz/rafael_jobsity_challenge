@@ -1,11 +1,12 @@
 import 'package:rafael_jobsity_challenge/domain/entities/actor.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/episode.dart';
+import 'package:rafael_jobsity_challenge/domain/entities/pagination.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
 
 abstract class TvShowsRepositoryInterface {
-  Future<List<TvShow>> getTvShows();
+  Future<PaginatedList<TvShow>> getTvShows();
 
-  Future<List<TvShow>> getMoreTvShows();
+  Future<PaginatedList<TvShow>> getMoreTvShows();
 
   Future<List<TvShow>> searchTvShows(String name);
 
