@@ -73,6 +73,10 @@ class TvShowsLibrary{
     return _tvShowsRepository.getActors(tvShowId);
   }
 
+  Future<List<TvShow>> getActorsSeries(int actorId) async {
+    return _tvShowsRepository.getActorSeries(actorId);
+  }
+
   close(){
     _tvShowsStream.close();
   }

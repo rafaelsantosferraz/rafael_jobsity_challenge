@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:rafael_jobsity_challenge/domain/entities/actor.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/episode.dart';
-import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
 import 'package:rafael_jobsity_challenge/presenter/navigation/navigation_routes.dart';
+import 'package:rafael_jobsity_challenge/presenter/ui/actors/actors_page.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/episode/episode_dialog.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/home/home_page.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/pin_code/pin_code_dialog.dart';
@@ -17,7 +18,7 @@ class NavigationController{
   static Route<dynamic> generateRoute(RouteSettings settings){
     switch(settings.name){
       case NavigationRoutes.home:    return MaterialPageRoute(builder: (_) => HomePage());
-      case NavigationRoutes.tvShow:  return MaterialPageRoute(builder: (_) => TvShowPage(tvShow: (settings.arguments as TvShowPageArguments).tvShow, color: (settings.arguments as TvShowPageArguments).color));
+      case NavigationRoutes.tvShow:  return MaterialPageRoute(builder: (_) => TvShowPage(tvShowPageArguments: (settings.arguments as TvShowPageArguments)));
       case NavigationRoutes.episode: return PageRouteBuilder(
           opaque: false,
           fullscreenDialog: true,
@@ -32,6 +33,7 @@ class NavigationController{
           barrierColor: Colors.transparent,
           pageBuilder: (_, __, ___) => PinCodeDialog()
       );
+      case NavigationRoutes.actor:   return MaterialPageRoute(builder: (_) => ActorPage(actor: (settings.arguments as Actor)));
       default: return MaterialPageRoute(builder: (_) => HomePage());
     }
   }
@@ -52,6 +54,8 @@ class NavigationController{
       break;
       case _GoToEpisodeEvent: await _onGoToEpisodeEvent(event as _GoToEpisodeEvent);
       break;
+      case _GoToActorEvent: await _onGoToActorEvent(event as _GoToActorEvent);
+      break;
       default: throw Exception('Event ${event.runtimeType} not process');
     }
   }
@@ -65,11 +69,15 @@ class NavigationController{
   }
 
   static _onGoToTvShowEvent(_GoToTvShowEvent event){
-    Navigator.of(event.context).pushNamed(NavigationRoutes.tvShow, arguments: TvShowPageArguments(event.tvShow, event.color));
+    Navigator.of(event.context).pushNamed(NavigationRoutes.tvShow, arguments: event.tvShowPageArguments);
   }
 
   static _onGoToEpisodeEvent(_GoToEpisodeEvent event){
     Navigator.of(event.context).pushNamed(NavigationRoutes.episode, arguments: event.episode);
+  }
+
+  static _onGoToActorEvent(_GoToActorEvent event){
+    Navigator.of(event.context).pushNamed(NavigationRoutes.actor, arguments: event.actor);
   }
   //endregion
 }

@@ -97,4 +97,21 @@ class TvMazeService {
     }
     return actors;
   }
+
+  Future<List<TvShow>> getActorSeries({required int actorId}) async {
+    var tvShows = <TvShow>[];
+    try {
+      var result = await _dio.get('people/$actorId/castcredits');
+      var json = result.data as List<dynamic>;
+      for (var element in json) {
+        var result = await Dio().get(element['_links']['show']['href']);
+        var json2 = result.data;
+        tvShows.add(TvShow.fromJson(json2));
+      }
+    } catch(e, s){
+      print(e);
+      print(s);
+    }
+    return tvShows;
+  }
 }

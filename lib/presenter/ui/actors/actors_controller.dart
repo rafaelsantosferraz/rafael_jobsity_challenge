@@ -1,30 +1,28 @@
 import 'dart:async';
 
-import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
+import 'package:rafael_jobsity_challenge/domain/entities/actor.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_shows_library.dart';
-import 'package:rafael_jobsity_challenge/presenter/ui/common/strings.dart';
 
 import 'actors_state.dart';
 
 part 'actors_events.dart';
 
-class TvShowController {
+class ActorController {
 
-  final List<bool> _selectedGenres;
+
   final TvShowsLibrary _tvShowsLibrary;
 
-  TvShowController(TvShow tvShow):
-    _selectedGenres = List.generate(genres.length, (index) => false),
+  ActorController(Actor actor):
     _tvShowsLibrary = TvShowsLibrary.instance,
     super(){
-    _currentState = TvShowState.initial(tvShow);
+    _currentState = ActorState.initial(actor);
     _update(_currentState);
     addEvent(ActorsEvent.start());
   }
 
-  final StreamController<TvShowState> _stateStreamController = StreamController();
-  Stream<TvShowState> get state => _stateStreamController.stream;
-  late TvShowState _currentState;
+  final StreamController<ActorState> _stateStreamController = StreamController();
+  Stream<ActorState> get state => _stateStreamController.stream;
+  late ActorState _currentState;
 
 
   //region Public --------------------------------------------------------------
@@ -44,35 +42,17 @@ class TvShowController {
     switch(event.runtimeType){
       case _StartEvent: await _onStart(event as _StartEvent);
       break;
-      case _AddFavoriteEvent: await _onAddFavorite(event as _AddFavoriteEvent);
-      break;
-      case _RemoveFavoriteEvent: await _onRemoveFavorite(event as _RemoveFavoriteEvent);
-      break;
       default: throw Exception('Event ${event.runtimeType} not process');
     }
   }
 
   _onStart(_StartEvent event) async {
-    var isFavorite = _tvShowsLibrary.checkIsFavorite(_currentState.tvShow);
-    _update(_currentState.copyWith(isFavorite: isFavorite));
-    if(_currentState.episodes == null) {
-      var episodes = await _tvShowsLibrary.getEpisodes(_currentState.tvShow.id);
-      _update(_currentState.copyWith(episodes: episodes));
-    }
-    print('Start TvShowController');
+    var tvShows = await _tvShowsLibrary.getActorsSeries(_currentState.actor.id);
+    _update(_currentState.copyWith(tvShows: tvShows));
+    print('Start ActorController');
   }
 
-  _onAddFavorite(_AddFavoriteEvent event) {
-    _tvShowsLibrary.addEvent(TvShowsLibraryEvent.addFavorite(event.tvShow));
-    print('Click add to favorite: ${event.tvShow.name}');
-  }
-
-  _onRemoveFavorite(_RemoveFavoriteEvent event) {
-    _tvShowsLibrary.addEvent(TvShowsLibraryEvent.removeFavorite(event.tvShow));
-    print('Click remove favorite: ${event.tvShow.name}');
-  }
-
-  _update(TvShowState state) {
+  _update(ActorState state) {
     _currentState = state;
     _stateStreamController.sink.add(state);
   }

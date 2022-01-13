@@ -1,34 +1,29 @@
-import 'package:rafael_jobsity_challenge/domain/entities/episode.dart';
+import 'package:rafael_jobsity_challenge/domain/entities/actor.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
 
-class TvShowState{
-  final TvShow tvShow;
-  final List<Episode>? episodes;
-  final bool? isFavorite;
+class ActorState{
+  final Actor actor;
+  final List<TvShow>? tvShows;
 
-  TvShowState({
-    required this.tvShow,
-    this.episodes,
-    this.isFavorite
+  ActorState({
+    required this.actor,
+    required this.tvShows,
   });
 
-  factory TvShowState.initial(TvShow tvShow){
-    return TvShowState(
-      tvShow: tvShow,
-      episodes: null,
-      isFavorite: null
+  factory ActorState.initial(Actor actor){
+    return ActorState(
+      actor: actor,
+      tvShows: null,
     );
   }
 
-  TvShowState copyWith({
-    TvShow? tvShow,
-    List<Episode>? episodes,
-    bool? isFavorite
+  ActorState copyWith({
+    Actor? actor,
+    List<TvShow>? tvShows,
   }){
-    return TvShowState(
-      tvShow: tvShow ?? this.tvShow.copy(),
-      episodes: episodes ?? (this.episodes != null ? List.from(this.episodes!) : null),
-      isFavorite: isFavorite ?? this.isFavorite
+    return ActorState(
+      actor: actor ?? this.actor.copy(),
+      tvShows: tvShows  ?? (this.tvShows != null ? List.from(this.tvShows!) : null),
     );
   }
 }

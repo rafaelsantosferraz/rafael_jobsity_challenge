@@ -84,4 +84,9 @@ class TvShowsRepository implements TvShowsRepositoryInterface, FavoriteTvShowsRe
   Future<List<Actor>> getActors(int tvShowId) async {
     return _tvShowsRemoteDataSource.getActors(tvShowId);
   }
+
+  @override
+  Future<List<TvShow>> getActorSeries(int actorId) async {
+    return _tvShowsRemoteDataSource.getActorSeries(actorId);
+  }
 }

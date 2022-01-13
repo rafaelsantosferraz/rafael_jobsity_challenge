@@ -8,4 +8,5 @@ class NavigationRoutes {
   static const String tvShow = '/tv_show';
   static const String episode = '/tv_show/episode';
   static const String pinCode = '/pin_code';
+  static const String actor = '/actor';
 }

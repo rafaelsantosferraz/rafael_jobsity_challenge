@@ -4,6 +4,7 @@ import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
 import 'package:rafael_jobsity_challenge/presenter/navigation/navigation_controller.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/colors.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/values.dart';
+import 'package:rafael_jobsity_challenge/presenter/ui/tv_show/tv_show_page.dart';
 
 
 class TvShowsList extends StatefulWidget {
@@ -197,6 +198,6 @@ class _TvShowCard extends StatelessWidget {
   }
 
   _onClick(BuildContext context){
-    NavigationController.addEvent(NavigationEvent.goToTvShow(context, tvShow, color));
+    NavigationController.addEvent(NavigationEvent.goToTvShow(context, TvShowPageArguments(tvShow: tvShow, color: color)));
   }
 }

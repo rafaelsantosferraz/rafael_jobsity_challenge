@@ -4,7 +4,7 @@ Rafael Ferraz Jobsity interview challenge
 
 ## Features Done(v)
 - (v) List series with pagination.
-- (v) Add search by name unsing appbar input.
+- (v) Add search by name using appbar input.
 - (v) Listing and search views show poster (no name, I know, but it was just terrible in the UI, sry).
 - (v) After clicking on a series, shows all required fields, including episodes separated by season.
 - (v) After clicking on an episode, shows all required fields too.
@@ -15,10 +15,10 @@ Rafael Ferraz Jobsity interview challenge
 - (v) Allow the user to save a series as a favorite.
 - (v) Allow the user to browse their favorite series in alphabetical order, and click on one to see its details.
 - (x) Create a people search by listing the name and image of the person.
-- (x) After clicking on a person, the application should show required fields
+- (V) After clicking on a person, the application should show required fields (not trough search, but from tv show cast member)
 
 ### Extra Features Done
-- (v) Filter series, search result and favorites by genrer (combined genre).
+- (v) Filter series, search result and favorites by genre (combined genre).
 - (v) Show cast members image and names on Series information page.
 - (v) UNIT TEST
 - (v) Super good looking app
@@ -32,6 +32,7 @@ Event driven development fits perfectly with BDD language, making it easy to lin
 with document specified behaviors. Example:
 - document says: 'When user taps...'
 - code run: TapEvent trigger;
+Not using fancy libs, all hand coded. Less dependency hell, and better control.
 
 
 ## Working process steps

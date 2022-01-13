@@ -14,4 +14,6 @@ abstract class TvShowsRepositoryInterface {
   Future<List<Episode>> getEpisodes(int tvShowId);
 
   Future<List<Actor>> getActors(int tvShowId);
+
+  Future<List<TvShow>> getActorSeries(int actorId);
 }

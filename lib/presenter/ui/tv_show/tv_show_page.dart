@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/actor.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/episode.dart';
 import 'package:rafael_jobsity_challenge/domain/entities/tv_show.dart';
+import 'package:rafael_jobsity_challenge/presenter/navigation/navigation_controller.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/colors.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/values.dart';
 import 'package:rafael_jobsity_challenge/presenter/ui/common/widgets/genres.dart';
@@ -17,19 +18,20 @@ class TvShowPageArguments {
   final TvShow tvShow;
   final ValueNotifier<Color> color;
 
-  TvShowPageArguments(this.tvShow, this.color);
+  TvShowPageArguments({required this.tvShow, required this.color});
 }
 class TvShowPage extends StatelessWidget {
 
-  final TvShow tvShow;
-  final ValueNotifier<Color> color;
+  final TvShow _tvShow;
+  final ValueNotifier<Color> _color;
   final TvShowController _tvShowController;
 
   TvShowPage({Key? key,
-    required this.tvShow,
-    required this.color,
+    required TvShowPageArguments tvShowPageArguments,
   }):
-    _tvShowController = TvShowController(tvShow),
+    _tvShow = tvShowPageArguments.tvShow,
+    _color = tvShowPageArguments.color,
+    _tvShowController = TvShowController(tvShowPageArguments.tvShow),
     super(key: key){
       _tvShowController.state.listen(onStateChange);
     }
@@ -53,18 +55,18 @@ class TvShowPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            BackdropAndRating(size: size, tvShow: tvShow),
+            BackdropAndRating(size: size, tvShow: _tvShow),
             const SizedBox(height: kDefaultPadding / 2),
             Header(
-                tvShow: tvShow,
+                tvShow: _tvShow,
                 isFavorite: _isFavorite,
                 favoriteClick: _favoriteClick
             ),
-            if(tvShow.genres.isNotEmpty)...[
+            if(_tvShow.genres.isNotEmpty)...[
               Genres(
-                genres: tvShow.genres,
+                genres: _tvShow.genres,
                 onGenreTap: (genre){},
-                color: color,
+                color: _color,
                 isSelectable: false,
               ),
               kVerticalGap,
@@ -82,7 +84,7 @@ class TvShowPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
               child: Text(
-                tvShow.summary.replaceAll(RegExp(r'<[^>]*>'), ""),
+                _tvShow.summary.replaceAll(RegExp(r'<[^>]*>'), ""),
                 style: const TextStyle(
                   color: kTextLightColor,
                 ),
@@ -108,7 +110,7 @@ class TvShowPage extends StatelessWidget {
                       ),
                       Actors(
                         actors: _actors ?? [],
-                        onActorTap: (actor){},
+                        onActorTap: (actor) => _onActorTap(context, actor),
                       ),
                       kVerticalGap,
                     ],
@@ -171,8 +173,12 @@ class TvShowPage extends StatelessWidget {
   //region Private -------------------------------------------------------------
   void _favoriteClick(bool isFavorite){
     isFavorite
-      ? _tvShowController.addEvent(TvShowEvent.addFavorite(tvShow))
-      : _tvShowController.addEvent(TvShowEvent.removeFavorite(tvShow));
+      ? _tvShowController.addEvent(TvShowEvent.addFavorite(_tvShow))
+      : _tvShowController.addEvent(TvShowEvent.removeFavorite(_tvShow));
+  }
+
+  void _onActorTap(BuildContext context, Actor actor){
+    NavigationController.addEvent(NavigationEvent.goToActor(context, actor));
   }
   //endregion
 }

@@ -24,4 +24,8 @@ class TvShowsRemoteDataSource{
   Future<List<Actor>> getActors(int tvShowId) async {
     return tvShowsService.getActors(tvShowId: tvShowId);
   }
+
+  Future<List<TvShow>> getActorSeries(int actorId) async {
+    return tvShowsService.getActorSeries(actorId: actorId);
+  }
 }
