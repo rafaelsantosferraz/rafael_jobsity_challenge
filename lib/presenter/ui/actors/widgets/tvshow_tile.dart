@@ -17,7 +17,7 @@ class TvShowTile extends StatelessWidget {
           borderRadius: const BorderRadius.all(Radius.circular(kDefaultPadding/2)),
           child: Image(
             fit: BoxFit.cover,
-            image: NetworkImage(tvShow.posterUrl ?? ''),
+            image: NetworkImage(tvShow.posterUrl),
           ),
         ),
       ),

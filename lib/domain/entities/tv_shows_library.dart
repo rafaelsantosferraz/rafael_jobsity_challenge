@@ -48,10 +48,8 @@ class TvShowsLibrary{
 
   //region Public --------------------------------------------------------------
   addEvent(TvShowsLibraryEvent event) async {
-    _eventsQueue.add(event);
-    if(_eventsQueue.length == 1){
-      _processNextEvent();
-    }
+    //_eventsQueue.add(event);
+    _onEvent(event);
   }
 
   printEventHistory(){
